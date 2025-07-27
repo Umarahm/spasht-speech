@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -15,8 +15,8 @@
     --foreground: 222.2 84% 4.9%;
 
     /* Speech App Colors */
-    --speech-bg: #F7F6F4;
-    --speech-green: #00373E;
+    --speech-bg: #f7f6f4;
+    --speech-green: #00373e;
 
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;

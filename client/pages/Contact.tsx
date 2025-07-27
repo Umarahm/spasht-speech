@@ -10,7 +10,8 @@ export default function Contact() {
             Contact Us
           </h1>
           <p className="font-bricolage text-xl text-speech-green/80 max-w-2xl mx-auto">
-            This page is ready for content. Continue prompting to add your contact information and forms.
+            This page is ready for content. Continue prompting to add your
+            contact information and forms.
           </p>
         </div>
       </div>

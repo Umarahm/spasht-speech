@@ -14,11 +14,11 @@ export default {
     },
     extend: {
       fontFamily: {
-        'bricolage': ['Bricolage Grotesque', 'system-ui', 'sans-serif'],
+        bricolage: ["Bricolage Grotesque", "system-ui", "sans-serif"],
       },
       colors: {
-        'speech-bg': '#F7F6F4',
-        'speech-green': '#00373E',
+        "speech-bg": "#F7F6F4",
+        "speech-green": "#00373E",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

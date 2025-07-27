@@ -10,7 +10,8 @@ export default function Login() {
             Login / SignUp
           </h1>
           <p className="font-bricolage text-xl text-speech-green/80 max-w-2xl mx-auto">
-            This page is ready for content. Continue prompting to add your authentication forms.
+            This page is ready for content. Continue prompting to add your
+            authentication forms.
           </p>
         </div>
       </div>
