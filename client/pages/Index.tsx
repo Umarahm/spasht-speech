@@ -178,7 +178,7 @@ export default function Index() {
                 <img
                   src="https://api.builder.io/api/v1/image/assets/TEMP/38bc7dc4b09c2ea5265fe9d32320e9d2f70b0ce9?width=1020"
                   alt="Wellness coaching illustration"
-                  className="w-full max-w-md lg:max-w-lg h-auto object-contain"
+                  className="w-full max-w-md lg:max-w-[554px] h-auto object-contain"
                 />
               </div>
             </div>
@@ -396,7 +396,7 @@ export default function Index() {
               <img
                 src="https://api.builder.io/api/v1/image/assets/TEMP/c601bb1abad81b80a480a34170e5db0104f0dbd2?width=1425"
                 alt="Community illustration with colorful shapes and expressions"
-                className="w-full max-w-[712px] h-auto object-contain"
+                className="w-auto max-w-[712px] h-auto object-contain flex-shrink-0"
               />
             </div>
           </div>
