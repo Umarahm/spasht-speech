@@ -186,6 +186,82 @@ export default function Index() {
         </div>
       </div>
 
+      {/* Resources Section */}
+      <div className="max-w-7xl mx-auto px-4 py-16 md:px-6 lg:px-8">
+        {/* Section Header */}
+        <div className="text-center mb-12">
+          <p className="font-bricolage text-sm font-medium text-speech-green tracking-wide uppercase mb-4">
+            EXPLORE & LEARN
+          </p>
+          <h2 className="font-bricolage text-3xl sm:text-4xl md:text-5xl lg:text-[52px] font-bold text-speech-green leading-tight tracking-wide mb-6">
+            Resources for Your Well-being
+          </h2>
+          <p className="font-bricolage text-lg md:text-xl lg:text-[22px] text-speech-green leading-relaxed tracking-wide lg:leading-[34px] max-w-2xl mx-auto">
+            Explore expert insights, self-care guides, and tools to support your mental health.
+          </p>
+        </div>
+
+        {/* Resources Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* Resource 1 - Articles & Guides */}
+          <div className="bg-white rounded-[59px] p-8 md:p-10 lg:p-12 text-center flex flex-col justify-between min-h-[404px]">
+            <div className="flex-1 space-y-6">
+              <h3 className="font-bricolage text-2xl md:text-3xl lg:text-[30px] font-bold text-speech-green leading-tight tracking-wide">
+                Articles & Guides
+              </h3>
+              <p className="font-bricolage text-lg lg:text-[18px] text-speech-green leading-relaxed tracking-wide lg:leading-[26px]">
+                Practical tips on stress management, mindfulness, and emotional resilience.
+              </p>
+            </div>
+            <div className="pt-8">
+              <button
+                className="bg-[#EFC01D] hover:bg-[#EFC01D]/90 text-white font-bricolage text-lg md:text-xl font-semibold px-10 py-3 rounded-full tracking-wide capitalize transition-colors"
+              >
+                Explore
+              </button>
+            </div>
+          </div>
+
+          {/* Resource 2 - Meditation & Relaxation */}
+          <div className="bg-white rounded-[59px] p-8 md:p-10 lg:p-12 text-center flex flex-col justify-between min-h-[404px]">
+            <div className="flex-1 space-y-6">
+              <h3 className="font-bricolage text-2xl md:text-3xl lg:text-[30px] font-bold text-speech-green leading-tight tracking-wide">
+                Meditation & Relaxation
+              </h3>
+              <p className="font-bricolage text-lg lg:text-[18px] text-speech-green leading-relaxed tracking-wide lg:leading-[26px]">
+                Audio sessions for guided meditation and deep breathing exercises.
+              </p>
+            </div>
+            <div className="pt-8">
+              <button
+                className="bg-[#4CCBBB] hover:bg-[#4CCBBB]/90 text-white font-bricolage text-lg md:text-xl font-semibold px-10 py-3 rounded-full tracking-wide capitalize transition-colors"
+              >
+                Explore
+              </button>
+            </div>
+          </div>
+
+          {/* Resource 3 - Webinars & Workshops */}
+          <div className="bg-white rounded-[59px] p-8 md:p-10 lg:p-12 text-center flex flex-col justify-between min-h-[404px] md:col-span-2 lg:col-span-1">
+            <div className="flex-1 space-y-6">
+              <h3 className="font-bricolage text-2xl md:text-3xl lg:text-[30px] font-bold text-speech-green leading-tight tracking-wide">
+                Webinars & Workshops
+              </h3>
+              <p className="font-bricolage text-lg lg:text-[18px] text-speech-green leading-relaxed tracking-wide lg:leading-[26px]">
+                Live and recorded sessions with mental health professionals.
+              </p>
+            </div>
+            <div className="pt-8">
+              <button
+                className="bg-[#F39CAC] hover:bg-[#F39CAC]/90 text-white font-bricolage text-lg md:text-xl font-semibold px-10 py-3 rounded-full tracking-wide capitalize transition-colors"
+              >
+                Explore
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Testimonials Section */}
       <div className="max-w-7xl mx-auto px-4 py-16 md:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
