@@ -409,14 +409,14 @@ export default function Index() {
           {/* Left Content - Illustration */}
           <div className="relative">
             {/* Background container */}
-            <div className="bg-[#F9E6D0] rounded-[60px] h-[385px] lg:h-[385px] w-full relative top-[217px]"></div>
+            <div className="bg-[#F9E6D0] rounded-[60px] h-[352px] lg:h-[352px] w-full relative top-[217px]"></div>
 
             {/* Illustration */}
             <div className="absolute inset-0 flex items-end justify-center">
               <img
                 src="https://api.builder.io/api/v1/image/assets/TEMP/11fe8ea888334345d57fe29279d18b112f5544fb?width=754"
                 alt="FAQ illustration with colorful head and thoughts"
-                className="w-[377px] h-[574px] object-contain"
+                className="w-full h-[438px] object-contain flex-1 max-w-[500px]"
               />
             </div>
           </div>
