@@ -145,18 +145,7 @@ export default function Index() {
                   Virtual therapy sessions with trained Voice AI models.
                 </p>
               </div>
-              
-              {/* Audio Wave Icon */}
-              <div className="absolute right-8 top-8 lg:right-12 lg:top-12 w-32 h-32 lg:w-44 lg:h-44 bg-[#4CCDBE] rounded-full flex items-center justify-center">
-                <div className="flex items-end space-x-2">
-                  <div className="w-4 h-6 bg-[#F8ECEC] rounded-full"></div>
-                  <div className="w-4 h-4 bg-[#F8ECEC] rounded-full"></div>
-                  <div className="w-4 h-10 bg-[#F8ECEC] rounded-full"></div>
-                  <div className="w-4 h-6 bg-[#F8ECEC] rounded-full"></div>
-                  <div className="w-4 h-4 bg-[#F8ECEC] rounded-full"></div>
-                </div>
-              </div>
-              
+
               <button className="border border-speech-green text-speech-green hover:bg-speech-green hover:text-white font-bricolage text-lg md:text-xl font-semibold px-8 py-3 rounded-full tracking-wide capitalize transition-colors self-start">
                 Learn More
               </button>
