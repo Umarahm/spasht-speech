@@ -89,6 +89,112 @@ export default function Index() {
           </div>
         </div>
       </div>
+
+      {/* Services Section */}
+      <div className="max-w-7xl mx-auto px-4 py-16 md:px-6 lg:px-8">
+        {/* Section Header */}
+        <div className="text-center mb-12">
+          <p className="font-bricolage text-sm font-medium text-speech-green tracking-wide uppercase mb-4">
+            SERVICES
+          </p>
+          <h2 className="font-bricolage text-3xl sm:text-4xl md:text-5xl lg:text-[52px] font-bold text-speech-green leading-tight tracking-wide mb-6">
+            Your Path to Well-being
+          </h2>
+          <p className="font-bricolage text-lg md:text-xl lg:text-[22px] text-speech-green leading-relaxed tracking-wide lg:leading-[34px] max-w-2xl mx-auto">
+            Discover expert guidance for a healthier speech, mind and balanced life.
+          </p>
+        </div>
+
+        {/* Services Grid */}
+        <div className="space-y-8">
+          {/* Top Row - Services 1 & 2 */}
+          <div className="grid lg:grid-cols-2 gap-8">
+            
+            {/* Service 1 - Mindfulness & Meditation */}
+            <div className="relative bg-[#F9E6D0] rounded-[60px] p-8 md:p-12 lg:p-15 min-h-[455px] flex flex-col justify-between overflow-hidden">
+              <div>
+                <h3 className="font-bricolage text-2xl md:text-3xl lg:text-[40px] font-bold text-speech-green leading-tight tracking-wide mb-6">
+                  Mindfulness & Meditation
+                </h3>
+                <p className="font-bricolage text-lg lg:text-xl text-speech-green leading-relaxed tracking-wide lg:leading-[26px] mb-8">
+                  Guided meditation sessions and stress management techniques.
+                </p>
+              </div>
+              
+              {/* Illustration */}
+              <div className="absolute right-8 top-8 lg:right-12 lg:top-12 w-32 md:w-48 lg:w-56">
+                <img 
+                  src="https://api.builder.io/api/v1/image/assets/TEMP/f96e34184b20fb2e857d59c9b440f2aed1ee678e?width=458" 
+                  alt="Mindfulness and meditation illustration"
+                  className="w-full h-auto object-contain"
+                />
+              </div>
+              
+              <button className="border border-speech-green text-speech-green hover:bg-speech-green hover:text-white font-bricolage text-lg md:text-xl font-semibold px-8 py-3 rounded-full tracking-wide capitalize transition-colors self-start">
+                Learn More
+              </button>
+            </div>
+
+            {/* Service 2 - Podcast/One-on-One */}
+            <div className="relative bg-[#F8ECEC] rounded-[60px] p-8 md:p-12 lg:p-15 min-h-[455px] flex flex-col justify-between overflow-hidden">
+              <div>
+                <h3 className="font-bricolage text-2xl md:text-3xl lg:text-[40px] font-bold text-speech-green leading-tight tracking-wide mb-6">
+                  Podcast or One-on-One we have it all!
+                </h3>
+                <p className="font-bricolage text-lg lg:text-xl text-speech-green leading-relaxed tracking-wide lg:leading-[26px] mb-8">
+                  Virtual therapy sessions with trained Voice AI models.
+                </p>
+              </div>
+              
+              {/* Audio Wave Icon */}
+              <div className="absolute right-8 top-8 lg:right-12 lg:top-12 w-32 h-32 lg:w-44 lg:h-44 bg-[#4CCDBE] rounded-full flex items-center justify-center">
+                <div className="flex items-end space-x-2">
+                  <div className="w-4 h-6 bg-[#F8ECEC] rounded-full"></div>
+                  <div className="w-4 h-4 bg-[#F8ECEC] rounded-full"></div>
+                  <div className="w-4 h-10 bg-[#F8ECEC] rounded-full"></div>
+                  <div className="w-4 h-6 bg-[#F8ECEC] rounded-full"></div>
+                  <div className="w-4 h-4 bg-[#F8ECEC] rounded-full"></div>
+                </div>
+              </div>
+              
+              <button className="border border-speech-green text-speech-green hover:bg-speech-green hover:text-white font-bricolage text-lg md:text-xl font-semibold px-8 py-3 rounded-full tracking-wide capitalize transition-colors self-start">
+                Learn More
+              </button>
+            </div>
+          </div>
+
+          {/* Bottom Row - Service 3 (Full Width) */}
+          <div className="relative bg-white rounded-[60px] p-8 md:p-12 lg:p-15 min-h-[455px] overflow-hidden">
+            <div className="grid lg:grid-cols-2 gap-8 items-center h-full">
+              
+              {/* Content */}
+              <div className="space-y-6">
+                <h3 className="font-bricolage text-2xl md:text-3xl lg:text-[40px] font-bold text-speech-green leading-tight tracking-wide">
+                  Wellness Coaching
+                </h3>
+                <p className="font-bricolage text-lg lg:text-xl text-speech-green leading-relaxed tracking-wide lg:leading-[26px]">
+                  Personalized exercises and activities to help you improve communication skills, overcome speech challenges, and express yourself with confidence.
+                </p>
+                <p className="font-bricolage text-lg lg:text-xl text-speech-green leading-relaxed tracking-wide lg:leading-[26px]">
+                  Our certified speech-language pathologists guide you through for clear, effective, and fluent communication.
+                </p>
+                <button className="bg-speech-green hover:bg-speech-green/90 text-white font-bricolage text-lg md:text-xl font-semibold px-8 py-3 rounded-full tracking-wide capitalize transition-colors">
+                  Learn More
+                </button>
+              </div>
+
+              {/* Illustration */}
+              <div className="flex justify-center lg:justify-end">
+                <img 
+                  src="https://api.builder.io/api/v1/image/assets/TEMP/38bc7dc4b09c2ea5265fe9d32320e9d2f70b0ce9?width=1020" 
+                  alt="Wellness coaching illustration"
+                  className="w-full max-w-md lg:max-w-lg h-auto object-contain"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
