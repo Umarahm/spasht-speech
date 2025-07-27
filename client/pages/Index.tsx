@@ -361,6 +361,47 @@ export default function Index() {
           {/* Partner logos would go here */}
         </div>
       </div>
+
+      {/* Community Section */}
+      <div className="max-w-7xl mx-auto px-4 py-16 md:px-6 lg:px-8">
+        <div className="bg-white rounded-[59px] overflow-hidden">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center min-h-[587px]">
+            {/* Left Content */}
+            <div className="p-8 md:p-12 lg:p-15 space-y-6">
+              {/* Section Label */}
+              <p className="font-bricolage text-sm font-medium text-speech-green tracking-wide uppercase">
+                COMMUNITY
+              </p>
+
+              {/* Main Heading */}
+              <h2 className="font-bricolage text-3xl sm:text-4xl md:text-5xl lg:text-[52px] font-bold text-speech-green leading-tight tracking-wide">
+                You're Not Alone on This Journey
+              </h2>
+
+              {/* Description */}
+              <p className="font-bricolage text-lg md:text-xl lg:text-[22px] text-speech-green leading-relaxed tracking-wide lg:leading-[34px]">
+                Connect with others, share experiences, and find encouragement in a safe, supportive space.
+              </p>
+
+              {/* Call to Action Button */}
+              <div className="pt-4">
+                <button className="bg-speech-green hover:bg-speech-green/90 text-white font-bricolage text-lg md:text-xl font-semibold px-10 md:px-12 py-3 md:py-4 rounded-full tracking-wide capitalize transition-colors">
+                  Join the Community
+                </button>
+              </div>
+            </div>
+
+            {/* Right Illustration */}
+            <div className="flex justify-center lg:justify-end p-8 md:p-12 lg:p-15">
+              <img
+                src="https://api.builder.io/api/v1/image/assets/TEMP/c601bb1abad81b80a480a34170e5db0104f0dbd2?width=1425"
+                alt="Community illustration with colorful shapes and expressions"
+                className="w-full max-w-[712px] h-auto object-contain"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
