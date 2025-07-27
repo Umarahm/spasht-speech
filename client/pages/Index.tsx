@@ -47,6 +47,48 @@ export default function Index() {
           </div>
         </div>
       </div>
+
+      {/* How It Works Section */}
+      <div className="max-w-7xl mx-auto px-4 py-16 md:px-6 lg:px-8">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          
+          {/* Left Content */}
+          <div className="space-y-6">
+            {/* Section Label */}
+            <p className="font-bricolage text-sm font-medium text-speech-green tracking-wide uppercase">
+              HOW IT WORKS
+            </p>
+            
+            {/* Main Heading */}
+            <h2 className="font-bricolage text-3xl sm:text-4xl md:text-5xl lg:text-[52px] font-bold text-speech-green leading-tight tracking-wide">
+              We Help You Prioritize Your Speech Health
+            </h2>
+            
+            {/* Description */}
+            <p className="font-bricolage text-lg md:text-xl lg:text-[22px] text-speech-green leading-relaxed tracking-wide lg:leading-[34px]">
+              Browse exercises, connect, and start your healing journey with our tried and tested professional AI Voice Coach.
+            </p>
+            
+            {/* Call to Action Button */}
+            <div className="pt-4">
+              <button className="bg-speech-green hover:bg-speech-green/90 text-white font-bricolage text-lg md:text-xl font-semibold px-10 md:px-12 py-3 md:py-4 rounded-full tracking-wide capitalize transition-colors">
+                Start Your Journey
+              </button>
+            </div>
+          </div>
+
+          {/* Right Illustration Container */}
+          <div className="flex justify-center lg:justify-end">
+            <div className="relative bg-speech-green rounded-[60px] w-full max-w-[550px] aspect-[550/564] flex items-center justify-center overflow-hidden">
+              <img 
+                src="https://api.builder.io/api/v1/image/assets/TEMP/94d811e65f6cd29f35f00f5fed21001c8bbdd9cf?width=832" 
+                alt="AI Voice Coach illustration showing speech therapy process"
+                className="w-[75%] h-auto object-contain"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
