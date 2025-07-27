@@ -402,6 +402,123 @@ export default function Index() {
           </div>
         </div>
       </div>
+
+      {/* FAQ Section */}
+      <div className="max-w-7xl mx-auto px-4 py-16 md:px-6 lg:px-8">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+          {/* Left Content - Illustration */}
+          <div className="relative">
+            {/* Background container */}
+            <div className="bg-[#F9E6D0] rounded-[60px] h-[385px] lg:h-[385px] w-full relative top-[217px]"></div>
+
+            {/* Illustration */}
+            <div className="absolute inset-0 flex items-end justify-center">
+              <img
+                src="https://api.builder.io/api/v1/image/assets/TEMP/11fe8ea888334345d57fe29279d18b112f5544fb?width=754"
+                alt="FAQ illustration with colorful head and thoughts"
+                className="w-[377px] h-[574px] object-contain"
+              />
+            </div>
+          </div>
+
+          {/* Right Content - FAQ */}
+          <div className="space-y-8">
+            {/* Section Header */}
+            <div className="space-y-6">
+              <p className="font-bricolage text-sm font-medium text-speech-green tracking-wide uppercase">
+                NEED HELP?
+              </p>
+              <h2 className="font-bricolage text-3xl sm:text-4xl md:text-5xl lg:text-[52px] font-bold text-speech-green leading-tight tracking-wide">
+                Frequently Asked Questions
+              </h2>
+              <p className="font-bricolage text-lg md:text-xl lg:text-[22px] text-speech-green leading-relaxed tracking-wide lg:leading-[34px]">
+                Find answers to common questions about our services, therapy, and mental well-being.
+              </p>
+            </div>
+
+            {/* FAQ Items */}
+            <div className="space-y-4">
+              {/* FAQ Item 1 */}
+              <div className="bg-white rounded-[30px] p-6 lg:p-8 flex items-center justify-between min-h-[92px]">
+                <p className="font-bricolage text-lg lg:text-xl text-speech-green font-medium leading-relaxed tracking-wide lg:leading-[34px] pr-4">
+                  Is your app accredited by any professional organizations?
+                </p>
+                <button className="flex-shrink-0 w-[42px] h-[42px] bg-speech-bg rounded-full flex items-center justify-center">
+                  <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="21" cy="21" r="21" fill="#F7F6F4"/>
+                    <path d="M18.75 30.225V12H23.43V30.225H18.75ZM12 23.34V18.885H30.18V23.34H12Z" fill="#00373E"/>
+                  </svg>
+                </button>
+              </div>
+
+              {/* FAQ Item 2 */}
+              <div className="bg-white rounded-[30px] p-6 lg:p-8 flex items-center justify-between min-h-[92px]">
+                <p className="font-bricolage text-lg lg:text-xl text-speech-green font-medium leading-relaxed tracking-wide lg:leading-[34px] pr-4">
+                  What is DAF?
+                </p>
+                <button className="flex-shrink-0 w-[42px] h-[42px] bg-speech-bg rounded-full flex items-center justify-center">
+                  <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="21" cy="21" r="21" fill="#F7F6F4"/>
+                    <path d="M18.75 30.225V12H23.43V30.225H18.75ZM12 23.34V18.885H30.18V23.34H12Z" fill="#00373E"/>
+                  </svg>
+                </button>
+              </div>
+
+              {/* FAQ Item 3 */}
+              <div className="bg-white rounded-[30px] p-6 lg:p-8 flex items-center justify-between min-h-[126px]">
+                <p className="font-bricolage text-lg lg:text-xl text-speech-green font-medium leading-relaxed tracking-wide lg:leading-[34px] pr-4">
+                  What's the difference between therapy and coaching?
+                </p>
+                <button className="flex-shrink-0 w-[42px] h-[42px] bg-speech-bg rounded-full flex items-center justify-center">
+                  <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="21" cy="21" r="21" fill="#F7F6F4"/>
+                    <path d="M18.75 30.225V12H23.43V30.225H18.75ZM12 23.34V18.885H30.18V23.34H12Z" fill="#00373E"/>
+                  </svg>
+                </button>
+              </div>
+
+              {/* FAQ Item 4 */}
+              <div className="bg-white rounded-[30px] p-6 lg:p-8 flex items-center justify-between min-h-[92px]">
+                <p className="font-bricolage text-lg lg:text-xl text-speech-green font-medium leading-relaxed tracking-wide lg:leading-[34px] pr-4">
+                  How does the AI work?
+                </p>
+                <button className="flex-shrink-0 w-[42px] h-[42px] bg-speech-bg rounded-full flex items-center justify-center">
+                  <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="21" cy="21" r="21" fill="#F7F6F4"/>
+                    <path d="M18.75 30.225V12H23.43V30.225H18.75ZM12 23.34V18.885H30.18V23.34H12Z" fill="#00373E"/>
+                  </svg>
+                </button>
+              </div>
+
+              {/* FAQ Item 5 */}
+              <div className="bg-white rounded-[30px] p-6 lg:p-8 flex items-center justify-between min-h-[92px]">
+                <p className="font-bricolage text-lg lg:text-xl text-speech-green font-medium leading-relaxed tracking-wide lg:leading-[34px] pr-4">
+                  Is this app suitable for children?
+                </p>
+                <button className="flex-shrink-0 w-[42px] h-[42px] bg-speech-bg rounded-full flex items-center justify-center">
+                  <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="21" cy="21" r="21" fill="#F7F6F4"/>
+                    <path d="M18.75 30.225V12H23.43V30.225H18.75ZM12 23.34V18.885H30.18V23.34H12Z" fill="#00373E"/>
+                  </svg>
+                </button>
+              </div>
+
+              {/* FAQ Item 6 */}
+              <div className="bg-white rounded-[30px] p-6 lg:p-8 flex items-center justify-between min-h-[126px]">
+                <p className="font-bricolage text-lg lg:text-xl text-speech-green font-medium leading-relaxed tracking-wide lg:leading-[34px] pr-4">
+                  Is my information and session history kept confidential?
+                </p>
+                <button className="flex-shrink-0 w-[42px] h-[42px] bg-speech-bg rounded-full flex items-center justify-center">
+                  <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="21" cy="21" r="21" fill="#F7F6F4"/>
+                    <path d="M18.75 30.225V12H23.43V30.225H18.75ZM12 23.34V18.885H30.18V23.34H12Z" fill="#00373E"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
