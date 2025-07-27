@@ -711,11 +711,6 @@ export default function Index() {
           <div className="bg-speech-green rounded-r-[50px] lg:rounded-l-none rounded-l-[50px] p-8 md:p-12 lg:p-15 min-h-[460px] flex flex-col justify-between relative overflow-hidden">
             {/* Illustration */}
             <div className="absolute top-8 right-8 lg:top-9 lg:right-12">
-              <img
-                src="https://api.builder.io/api/v1/image/assets/TEMP/1a809ac34d418c8e60a975f50e95f14bf6189c98?width=457"
-                alt="Support illustration with colorful shapes"
-                className="w-[228px] h-[244px] object-contain"
-              />
             </div>
 
             {/* Content */}
