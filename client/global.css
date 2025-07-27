@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -11,6 +13,10 @@
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
+
+    /* Speech App Colors */
+    --speech-bg: #F7F6F4;
+    --speech-green: #00373E;
 
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
