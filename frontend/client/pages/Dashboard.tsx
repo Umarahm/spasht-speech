@@ -626,8 +626,8 @@ export default function Dashboard() {
                             <div className="bg-white/80 backdrop-blur-sm rounded-[25px] p-6 pt-12 border border-teal-200/50 hover:shadow-lg transition-all duration-300">
                                 <h3 className="font-bricolage font-semibold text-speech-green tracking-wide mb-2 text-center">Social Connection</h3>
                                 <p className="text-sm text-speech-green/70 text-center">Have meaningful conversations with 5 new people</p>
+                            </div>
                         </div>
-                    </div>
 
                         {/* Reading Challenge */}
                         <div className="flex flex-col relative">
