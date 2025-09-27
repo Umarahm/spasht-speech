@@ -1,0 +1,31 @@
+{
+  "name": "speech-app-backend",
+  "version": "1.0.0",
+  "description": "Backend server for Speech App",
+  "main": "server/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch server/index.ts",
+    "build": "tsc",
+    "start": "tsx server/index.ts",
+    "test": "vitest --run"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@types/multer": "^2.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.0",
+    "express": "^4.18.2",
+    "multer": "^2.0.2",
+    "openai": "^5.22.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.5.5",
+    "tsx": "^4.7.0",
+    "typescript": "^5.5.3",
+    "vitest": "^3.1.4"
+  }
+}
