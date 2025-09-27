@@ -467,7 +467,7 @@ export default function SpeechTherapy() {
     const processRecording = async (audioBlob: Blob) => {
         try {
             if (!currentItem) {
-                setFeedback('incorrect');
+                setFeedback('wrong');
                 setTimeout(() => setFeedback(null), 2000);
                 return;
             }
@@ -511,7 +511,7 @@ export default function SpeechTherapy() {
             setTimeout(() => setFeedback(null), 3000);
         } catch (error) {
             console.error('Error processing recording:', error);
-            setFeedback('incorrect');
+            setFeedback('wrong');
             setTimeout(() => setFeedback(null), 2000);
         }
     };
@@ -606,7 +606,7 @@ export default function SpeechTherapy() {
             setFeedback('correct');
             setScore(prev => prev + 1);
         } else {
-            setFeedback('incorrect');
+            setFeedback('wrong');
         }
 
         // Move to next question or reset
