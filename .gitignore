@@ -30,3 +30,8 @@ dist-ssr
 .trae
 .builder
 netlify
+
+
+vapi.md
+Jam&PassageApi.md
+netlify.toml
