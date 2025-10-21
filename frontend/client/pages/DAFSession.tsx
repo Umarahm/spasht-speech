@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../components/auth/AuthProvider';
-import DashboardHeader from '../components/DashboardHeader';
+import Navigation from '../components/Navigation';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Slider } from '../components/ui/slider';
@@ -329,7 +329,7 @@ export default function DAFSession() {
 
     return (
         <div className="min-h-screen bg-speech-bg">
-            <DashboardHeader showFeatureSelector={true} currentFeature="DAF Training" />
+            <Navigation />
 
             {/* Headphones Warning Modal */}
             {showHeadphonesWarning && (
@@ -410,10 +410,19 @@ export default function DAFSession() {
                                 </div>
                             </CardHeader>
                             <CardContent>
-                                <div className="bg-speech-bg rounded-lg p-6 min-h-[200px]">
-                                    <p className="font-bricolage text-lg leading-relaxed text-speech-green/80">
-                                        {currentPassage}
-                                    </p>
+                                <div className="bg-speech-bg rounded-lg p-6 min-h-[200px] flex flex-col items-center justify-center">
+                                    {currentPassage === 'Loading passage...' ? (
+                                        <div className="text-center">
+                                            <div className="loader mx-auto mb-4"></div>
+                                            <p className="font-bricolage text-lg text-speech-green/80">
+                                                {currentPassage}
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        <p className="font-bricolage text-lg leading-relaxed text-speech-green/80">
+                                            {currentPassage}
+                                        </p>
+                                    )}
                                 </div>
                             </CardContent>
                         </Card>

@@ -6,7 +6,7 @@ export default function Footer() {
                 <div className="bg-white rounded-l-[30px] md:rounded-l-[50px] lg:rounded-r-none rounded-r-[30px] md:rounded-r-[50px] p-6 md:p-12 lg:p-15 min-h-[300px] md:min-h-[460px] flex flex-col">
                     {/* Logo */}
                     <h2 className="font-bricolage text-2xl md:text-4xl lg:text-[40px] font-bold text-speech-green leading-tight tracking-wide capitalize mb-6 md:mb-8">
-                        Speech
+                        Spasht
                     </h2>
 
                     {/* Navigation Grid */}

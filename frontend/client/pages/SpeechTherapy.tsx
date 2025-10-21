@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../components/auth/AuthProvider';
-import DashboardHeader from '../components/DashboardHeader';
+import Navigation from '../components/Navigation';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
@@ -635,7 +635,7 @@ export default function SpeechTherapy() {
 
     return (
         <div className="min-h-screen bg-speech-bg">
-            <DashboardHeader showFeatureSelector={true} currentFeature="Speech Therapy" />
+            <Navigation />
 
             {/* Hero Background */}
             <div className="relative min-h-[30vh] flex items-center justify-center overflow-hidden">

@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { User, Key, Mail, UserCircle, LogOut, Copy } from 'lucide-react';
+import React, { useState } from 'react';
+import { User, Key, Copy, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from './auth/AuthProvider';
 import { Button } from './ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 
 const Profile = () => {
   const { user, logout } = useAuthContext();
+  const navigate = useNavigate();
   const [copied, setCopied] = useState<boolean>(false);
 
   // Copy user ID to clipboard
@@ -28,6 +28,7 @@ const Profile = () => {
   const handleLogout = async () => {
     try {
       await logout();
+      navigate('/login');
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -44,78 +45,40 @@ const Profile = () => {
           />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-80 mr-4 mt-2" align="end" forceMount>
-        <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">
-              {user?.displayName || 'User'}
-            </p>
-            <p className="text-xs leading-none text-muted-foreground">
-              {user?.email}
-            </p>
+      <DropdownMenuContent
+        className="w-64 mr-4 mt-2 bg-white border-2 border-speech-green/20 shadow-lg rounded-2xl"
+        align="end"
+        forceMount
+      >
+        <DropdownMenuItem className="cursor-pointer font-bricolage text-speech-green hover:bg-speech-green/10 rounded-xl mx-2 my-1 px-4 py-3">
+          <User className="mr-3 h-5 w-5" />
+          <span className="text-base font-medium">Profile</span>
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator className="bg-speech-green/20" />
+
+        <DropdownMenuItem
+          className="cursor-pointer font-bricolage text-speech-green hover:bg-speech-green/10 rounded-xl mx-2 my-1 px-4 py-3"
+          onClick={copyToClipboard}
+        >
+          <Key className="mr-3 h-5 w-5" />
+          <span className="text-base font-medium">Copy Access Key</span>
+        </DropdownMenuItem>
+
+        {copied && (
+          <div className="px-4 py-2">
+            <p className="text-sm text-green-600 font-bricolage">Access key copied!</p>
           </div>
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem className="cursor-pointer">
-            <User className="mr-2 h-4 w-4" />
-            <span>Profile</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer">
-            <Mail className="mr-2 h-4 w-4" />
-            <span>Messages</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer">
-            <UserCircle className="mr-2 h-4 w-4" />
-            <span>Settings</span>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        
-        <DropdownMenuSeparator />
-        
-        {/* Access Key Display (using Firebase UID) */}
-        <div className="px-2 py-1.5">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium">Access Key</h3>
-          </div>
-          
-          {user?.uid ? (
-            <>
-              <div className="flex items-center space-x-2">
-                <div className="flex items-center space-x-1 bg-slate-100 rounded-md px-2 py-1">
-                  <Key className="h-3 w-3 text-slate-500" />
-                  <span className="text-sm font-mono truncate max-w-[120px]">{user.uid}</span>
-                </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={copyToClipboard}
-                  className="h-7 w-7 p-0"
-                >
-                  <Copy className="h-3 w-3" />
-                </Button>
-              </div>
-              
-              {copied && (
-                <p className="text-xs text-green-600 mt-1">Copied to clipboard!</p>
-              )}
-              
-              <p className="text-xs text-muted-foreground mt-2">
-                This is your unique user ID. Use it to access special features in external applications.
-              </p>
-            </>
-          ) : (
-            <p className="text-xs text-muted-foreground">Loading...</p>
-          )}
-        </div>
-        
-        <DropdownMenuSeparator />
-        <DropdownMenuItem 
-          className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50"
+        )}
+
+        <DropdownMenuSeparator className="bg-speech-green/20" />
+
+        <DropdownMenuItem
+          className="cursor-pointer font-bricolage text-red-600 hover:bg-red-50 rounded-xl mx-2 my-1 px-4 py-3"
           onClick={handleLogout}
         >
-          <LogOut className="mr-2 h-4 w-4" />
-          <span>Log out</span>
+          <LogOut className="mr-3 h-5 w-5" />
+          <span className="text-base font-medium">Logout</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

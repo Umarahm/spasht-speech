@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../components/auth/AuthProvider';
-import DashboardHeader from '../components/DashboardHeader';
+import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -81,7 +81,7 @@ export default function Blog() {
 
     return (
         <div className="min-h-screen bg-speech-bg">
-            <DashboardHeader />
+            <Navigation />
 
             {/* Hero Section */}
             <div className="relative min-h-[40vh] flex items-center justify-center overflow-hidden">
