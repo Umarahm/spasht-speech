@@ -27,7 +27,7 @@ export default function Login() {
         <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-speech-green/10 to-speech-green/5" />
           <img
-            src="/Gemini_Generated_Image_y3u95dy3u95dy3u9.png"
+            src="/assets/Login_img.png"
             alt="Authentication illustration"
             className="w-full h-full object-cover"
           />
@@ -37,7 +37,7 @@ export default function Login() {
               Welcome to Spasht
             </h2>
             <p className="font-bricolage text-lg text-white/90 max-w-md">
-              Your gateway to seamless speech and communication solutions. 
+              Your gateway to seamless speech and communication solutions.
               Join our community today.
             </p>
           </div>
@@ -49,7 +49,7 @@ export default function Login() {
             {/* Google Auth Button */}
             <div className="space-y-4">
               <GoogleAuthButton />
-              
+
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <Separator className="w-full border-speech-green/20" />

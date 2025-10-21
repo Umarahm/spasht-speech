@@ -241,7 +241,7 @@ const VapiConversation = ({ persona = 'therapist', onSessionEnd, onError, autoSt
         return (
             <div className="flex items-center justify-center p-8">
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-speech-green mx-auto mb-4"></div>
+                    <div className="loader mx-auto mb-4"></div>
                     <p className="font-bricolage text-gray-600">Initializing voice AI...</p>
                 </div>
             </div>

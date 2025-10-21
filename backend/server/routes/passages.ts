@@ -1,7 +1,8 @@
 import { RequestHandler } from "express";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// You'll need to install and configure the Gemini API SDK
-// For now, this is a mock implementation
+// Initialize Gemini AI
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 interface PassageRequest {
     difficulty: 'beginner' | 'intermediate' | 'advanced';
@@ -16,37 +17,53 @@ interface PassageResponse {
     estimatedReadTime: number; // in seconds
 }
 
-const generatePassage = (difficulty: string, topic?: string): string => {
-    const passages = {
-        beginner: [
-            "The cat sat on the mat. The dog ran in the park. The sun is shining bright. I like to eat ice cream. My friend likes to play games.",
-            "Hello, how are you today? I am fine, thank you. What is your name? My name is Sam. Nice to meet you, Sam.",
-            "The quick brown fox jumps over the lazy dog. This is a pangram that contains every letter of the alphabet.",
-            "I went to the store to buy some bread. The store was busy with many people. I found the bread on the shelf."
-        ],
-        intermediate: [
-            "Digital auditory feedback is a technique used in speech therapy to help individuals improve their communication skills. By providing real-time audio feedback, speakers can become more aware of their speech patterns and make necessary adjustments to improve clarity and fluency.",
-            "The human brain processes speech through complex neural networks that coordinate muscle movements in the mouth, tongue, and vocal cords. Speech therapists work with clients to strengthen these neural pathways through targeted exercises and practice sessions.",
-            "Communication is essential for building relationships and expressing ideas. Whether through spoken words, written text, or nonverbal cues, effective communication helps us connect with others and share our thoughts and feelings.",
-            "Technology has revolutionized speech therapy by providing new tools and methods for assessment and treatment. From mobile apps to sophisticated analysis software, therapists now have access to innovative solutions that enhance traditional therapy approaches."
-        ],
-        advanced: [
-            "Neuroplasticity refers to the brain's remarkable ability to reorganize itself by forming new neural connections throughout life. This phenomenon underlies the effectiveness of speech therapy interventions, as repeated practice strengthens specific neural pathways associated with speech production and comprehension.",
-            "Articulation disorders can significantly impact an individual's ability to communicate effectively in academic, professional, and social settings. Speech-language pathologists employ evidence-based techniques to address these challenges, including targeted exercises, visual feedback systems, and compensatory strategies.",
-            "The integration of artificial intelligence and machine learning algorithms in speech therapy represents a paradigm shift in clinical practice. These technologies enable precise measurement of speech parameters, personalized treatment planning, and automated progress tracking, ultimately improving therapeutic outcomes.",
-            "Phonological awareness, the ability to recognize and manipulate sounds in spoken language, forms the foundation of literacy development. Speech therapists utilize structured activities and multisensory approaches to enhance phonological processing skills, thereby supporting both speech production and reading comprehension."
-        ]
-    };
+const generatePassage = async (difficulty: string, topic?: string): Promise<string> => {
+    try {
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
 
-    const difficultyPassages = passages[difficulty as keyof typeof passages] || passages.intermediate;
-    return difficultyPassages[Math.floor(Math.random() * difficultyPassages.length)];
+        const prompts = {
+            beginner: `Generate a simple reading passage suitable for beginner speech therapy students. The passage should be 50-75 words long, use basic vocabulary, and focus on everyday topics. Make it engaging and natural to read aloud. ${topic ? `Topic: ${topic}` : ''}`,
+            intermediate: `Generate a reading passage suitable for intermediate speech therapy students. The passage should be 50-75 words long, use moderately complex vocabulary, and discuss interesting concepts. Make it suitable for practicing articulation and fluency. ${topic ? `Topic: ${topic}` : ''}`,
+            advanced: `Generate a reading passage suitable for advanced speech therapy students. The passage should be 50-75 words long, use sophisticated vocabulary, and explore complex ideas. Make it challenging for pronunciation and expression practice. ${topic ? `Topic: ${topic}` : ''}`
+        };
+
+        const prompt = prompts[difficulty as keyof typeof prompts] || prompts.intermediate;
+
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const passage = response.text().trim();
+
+        // Ensure the passage is within word limits
+        const words = passage.split(' ');
+        if (words.length < 50) {
+            // If too short, generate again with emphasis on length
+            const extendedPrompt = `${prompt} Please make sure the passage is at least 50 words long.`;
+            const extendedResult = await model.generateContent(extendedPrompt);
+            const extendedResponse = await extendedResult.response;
+            return extendedResponse.text().trim();
+        } else if (words.length > 75) {
+            // If too long, truncate to approximately 75 words
+            return words.slice(0, 75).join(' ') + '...';
+        }
+
+        return passage;
+    } catch (error) {
+        console.error('Error generating passage with Gemini:', error);
+        // Fallback to static passages if API fails
+        const fallbackPassages = {
+            beginner: "The cat sat on the mat. The dog ran in the park. The sun is shining bright. I like to eat ice cream. My friend likes to play games. We have fun together every day. The birds sing in the trees. The flowers are blooming now.",
+            intermediate: "Digital auditory feedback is a technique used in speech therapy to help individuals improve their communication skills. By providing real-time audio feedback, speakers can become more aware of their speech patterns and make necessary adjustments to improve clarity and fluency.",
+            advanced: "Neuroplasticity refers to the brain's remarkable ability to reorganize itself by forming new neural connections throughout life. This phenomenon underlies the effectiveness of speech therapy interventions, as repeated practice strengthens specific neural pathways associated with speech production and comprehension."
+        };
+        return fallbackPassages[difficulty as keyof typeof fallbackPassages] || fallbackPassages.intermediate;
+    }
 };
 
-export const handleGeneratePassage: RequestHandler = (req, res) => {
+export const handleGeneratePassage: RequestHandler = async (req, res) => {
     try {
         const { difficulty = 'intermediate', topic, length = 'medium' }: PassageRequest = req.body;
 
-        const passage = generatePassage(difficulty, topic);
+        const passage = await generatePassage(difficulty, topic);
         const wordCount = passage.split(' ').length;
         const estimatedReadTime = Math.ceil(wordCount / 200 * 60); // Assuming 200 words per minute
 

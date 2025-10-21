@@ -88,7 +88,7 @@ export default function LoginSuccess() {
 
                         {/* Loading Animation */}
                         <div className="flex justify-center">
-                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-speech-green"></div>
+                            <div className="loader"></div>
                         </div>
 
                         {/* Manual Navigation */}

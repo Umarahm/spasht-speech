@@ -13,7 +13,7 @@ import React, { useState } from 'react';
 import { MessageSquare, Settings } from 'lucide-react';
 import { Badge } from '../components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import DashboardHeader from '../components/DashboardHeader';
+import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import VapiConversation from '../src/components/ai/VapiConversation.jsx';
 
@@ -75,7 +75,7 @@ export default function AIPodcast() {
 
     return (
         <div className="min-h-screen bg-speech-bg">
-            <DashboardHeader />
+            <Navigation />
 
             {/* Header Section */}
             <div className="max-w-7xl mx-auto px-4 py-16 md:px-6 lg:px-8">

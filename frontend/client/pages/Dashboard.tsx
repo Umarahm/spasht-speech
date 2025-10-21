@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../components/auth/AuthProvider';
-import DashboardHeader from '../components/DashboardHeader';
+import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
+import JamPassagesSelector from '../components/JamPassagesSelector';
+import ProgressSelector from '../components/ProgressSelector';
+import Settings from '../components/Settings';
 import { blogLinks } from '../data/blogLinks';
 import { getRandomQuote } from '../data/quotelist';
 import type { BlogLink } from '../data/blogLinks';
@@ -19,6 +22,11 @@ export default function Dashboard() {
     const navigate = useNavigate();
     const [dailyStreak, setDailyStreak] = useState(7); // Mock streak data
     const [currentQuote, setCurrentQuote] = useState<Quote | null>(null);
+    const [backgroundImageLoaded, setBackgroundImageLoaded] = useState(false);
+    const [blogImagesLoaded, setBlogImagesLoaded] = useState<Record<number, boolean>>({});
+    const [jamPassagesModalOpen, setJamPassagesModalOpen] = useState(false);
+    const [progressModalOpen, setProgressModalOpen] = useState(false);
+    const [settingsModalOpen, setSettingsModalOpen] = useState(false);
 
     useEffect(() => {
         // Redirect to login if not authenticated
@@ -119,19 +127,28 @@ export default function Dashboard() {
 
     return (
         <div className="min-h-screen bg-speech-bg">
-            <DashboardHeader dailyStreak={dailyStreak} />
+            <Navigation showDailyStreak={true} dailyStreak={dailyStreak} />
 
             {/* Greeting Section - Hero with Background Image */}
             <div className="relative min-h-[75vh] flex items-center justify-center overflow-hidden">
                 {/* Background Image */}
                 <div className="absolute inset-0">
+                    {!backgroundImageLoaded && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-speech-bg">
+                            <div className="text-center">
+                                <div className="loader mx-auto mb-4"></div>
+                                <p className="font-bricolage text-lg text-speech-green">Loading background...</p>
+                            </div>
+                        </div>
+                    )}
                     <img
                         src={greeting.image}
                         alt={greeting.message}
                         className={`w-full h-full ${greeting.message === 'Good evening'
                             ? 'object-cover object-center scale-125'
                             : 'object-cover object-center scale-110'
-                            }`}
+                            } ${backgroundImageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                        onLoad={() => setBackgroundImageLoaded(true)}
                     />
                     {/* Elegant gradient overlay */}
                     <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60"></div>
@@ -266,7 +283,9 @@ export default function Dashboard() {
                                 <div
                                     key={index}
                                     onClick={() => {
-                                        if (feature.title === 'DAF Training') {
+                                        if (feature.title === 'Speech Analysis') {
+                                            setJamPassagesModalOpen(true);
+                                        } else if (feature.title === 'DAF Training') {
                                             navigate('/daf-session');
                                         } else if (feature.title === 'Therapy Sessions') {
                                             navigate('/speech-therapy');
@@ -274,6 +293,10 @@ export default function Dashboard() {
                                             navigate('/ai-podcast');
                                         } else if (feature.title === 'Games') {
                                             window.location.href = 'https://spasht-game.vercel.app/';
+                                        } else if (feature.title === 'Progress Tracking') {
+                                            setProgressModalOpen(true);
+                                        } else if (feature.title === 'Settings') {
+                                            setSettingsModalOpen(true);
                                         }
                                         // Add other feature navigation here as needed
                                     }}
@@ -314,7 +337,7 @@ export default function Dashboard() {
             <div className="py-20 px-4 md:px-6 lg:px-8 bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 relative overflow-hidden">
                 {/* Background Pattern */}
                 <div className="absolute inset-0 opacity-5">
-                    <div className="absolute top-10 left-10 w-48 h-48 border-2 border-speech-green rounded-full"></div>
+                    {/* <div className="absolute top-10 left-10 w-48 h-48 border-2 border-speech-green rounded-full"></div> */}
                     <div className="absolute top-32 right-20 w-24 h-24 border border-speech-green/50 rounded-full"></div>
                     <div className="absolute bottom-20 left-1/4 w-20 h-20 bg-speech-green/10 rounded-full"></div>
                     <div className="absolute bottom-32 right-1/3 w-16 h-16 border border-speech-green/30 rounded-full"></div>
@@ -339,7 +362,7 @@ export default function Dashboard() {
                         <div className="relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow h-32 md:h-48">
                             <div className="absolute inset-0">
                                 <img
-                                    src="/assets/Communication Quests/Speak The Truth.png"
+                                    src="assets/Communication Quests/Speak The Truth.png"
                                     alt="Speak Your Truth"
                                     className="w-full h-full object-cover object-left opacity-30"
                                     style={{ objectPosition: '33% center' }}
@@ -706,11 +729,20 @@ export default function Dashboard() {
                                 className="bg-white rounded-[20px] md:rounded-[30px] p-4 md:p-8 hover:shadow-lg transition-all duration-300 cursor-pointer"
                             >
                                 <div className="mb-4 md:mb-6">
-                                    <div className="w-full h-32 md:h-48 bg-speech-bg rounded-xl md:rounded-2xl flex items-center justify-center overflow-hidden">
+                                    <div className="w-full h-32 md:h-48 bg-speech-bg rounded-xl md:rounded-2xl flex items-center justify-center overflow-hidden relative">
+                                        {!blogImagesLoaded[index] && (
+                                            <div className="absolute inset-0 flex items-center justify-center bg-speech-bg">
+                                                <div className="text-center">
+                                                    <div className="loader mx-auto mb-2"></div>
+                                                    <p className="font-bricolage text-xs text-speech-green">Loading...</p>
+                                                </div>
+                                            </div>
+                                        )}
                                         <img
                                             src={`/assets/blog${(index % 3) + 1}.png`}
                                             alt="Speech Therapy Resources"
-                                            className="w-full h-full object-cover"
+                                            className={`w-full h-full object-cover transition-opacity duration-300 ${blogImagesLoaded[index] ? 'opacity-100' : 'opacity-0'}`}
+                                            onLoad={() => setBlogImagesLoaded(prev => ({ ...prev, [index]: true }))}
                                         />
                                     </div>
                                 </div>
@@ -758,6 +790,24 @@ export default function Dashboard() {
             </div>
 
             <Footer />
+
+            {/* Jam and Passages Selector Modal */}
+            <JamPassagesSelector
+                open={jamPassagesModalOpen}
+                onOpenChange={setJamPassagesModalOpen}
+            />
+
+            {/* Progress Selector Modal */}
+            <ProgressSelector
+                open={progressModalOpen}
+                onOpenChange={setProgressModalOpen}
+            />
+
+            {/* Settings Modal */}
+            <Settings
+                open={settingsModalOpen}
+                onOpenChange={setSettingsModalOpen}
+            />
         </div>
     );
 }

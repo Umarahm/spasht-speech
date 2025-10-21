@@ -1,19 +1,41 @@
 import Navigation from "@/components/Navigation";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "../components/auth/AuthProvider";
 
 export default function Index() {
   const [openAccordion, setOpenAccordion] = useState<number | null>(null);
+  const navigate = useNavigate();
+  const { user } = useAuthContext();
 
   const toggleAccordion = (index: number) => {
     setOpenAccordion(openAccordion === index ? null : index);
   };
 
+  const handleButtonClick = () => {
+    if (user) {
+      navigate('/dashboard');
+    } else {
+      navigate('/login');
+    }
+  };
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-speech-bg">
-      <Navigation />
+      <Navigation onScrollToSection={scrollToSection} />
 
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-4 py-8 md:px-6 lg:px-8">
+      <section id="home" className="max-w-7xl mx-auto px-4 py-8 md:px-6 lg:px-8">
         <div className="relative bg-gradient-to-br from-[#F9E6D0] to-[#F5DCC4] rounded-[70px] overflow-hidden min-h-[500px] md:min-h-[600px] lg:min-h-[668px] flex items-center justify-center shadow-2xl">
           {/* Background Pattern */}
           <div className="absolute inset-0 opacity-5">
@@ -42,23 +64,78 @@ export default function Index() {
           {/* Main Content */}
           <div className="relative z-10 max-w-4xl mx-auto px-6 md:px-8 lg:px-12 text-center">
             <h1 className="font-bricolage text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-speech-green mb-6 md:mb-8 leading-tight drop-shadow-sm">
-              Support for Your Speech
+              Start Your Speech Journey
             </h1>
 
             <p className="font-bricolage text-lg sm:text-xl md:text-2xl lg:text-2xl text-speech-green/90 mb-8 md:mb-12 max-w-2xl mx-auto leading-relaxed tracking-wide">
-              Connect with licensed AI therapists, counselors, and community to
+              Connect with AI therapists, AI counselors, and community to
               support your speech journey.
             </p>
 
-            <button className="bg-speech-green hover:bg-speech-green/90 text-white font-bricolage text-lg md:text-xl font-semibold px-10 md:px-12 py-3 md:py-4 rounded-full tracking-wide capitalize transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+            <button
+              onClick={handleButtonClick}
+              className="bg-speech-green hover:bg-speech-green/90 text-white font-bricolage text-lg md:text-xl font-semibold px-10 md:px-12 py-3 md:py-4 rounded-full tracking-wide capitalize transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
+            >
               Get Started
             </button>
           </div>
         </div>
       </section>
 
+      {/* About Section */}
+      <div id="about" className="max-w-7xl mx-auto px-4 py-16 md:px-6 lg:px-8">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          {/* Left Image */}
+          <div className="flex justify-center lg:justify-start">
+            <div className="relative w-full max-w-[550px]">
+              <img
+                src="/assets/Empowering.png"
+                alt="Empowering Voices, Transforming Lives illustration"
+                className="w-full h-auto object-contain"
+              />
+            </div>
+          </div>
+
+          {/* Right Content */}
+          <div className="space-y-6">
+            {/* Section Label */}
+            <p className="font-bricolage text-sm font-medium text-speech-green tracking-wide uppercase">
+              ABOUT US
+            </p>
+
+            {/* Main Heading */}
+            <h2 className="font-bricolage text-3xl sm:text-4xl md:text-5xl lg:text-[52px] font-bold text-speech-green leading-tight tracking-wide">
+              Empowering Voices, Transforming Lives
+            </h2>
+
+            {/* Description */}
+            <p className="font-bricolage text-lg md:text-xl lg:text-[22px] text-speech-green leading-relaxed tracking-wide lg:leading-[34px]">
+              Spasht is a cutting-edge speech therapy platform that combines AI technology with
+              personalized coaching to help individuals overcome speech challenges and build
+              confidence in their communication.
+            </p>
+
+            <p className="font-bricolage text-lg md:text-xl lg:text-[22px] text-speech-green leading-relaxed tracking-wide lg:leading-[34px]">
+              Our mission is to make professional speech therapy accessible to everyone,
+              regardless of location or background, through innovative technology and
+              evidence-based practices.
+            </p>
+
+            {/* Call to Action Button */}
+            <div className="pt-4">
+              <button
+                onClick={handleButtonClick}
+                className="bg-speech-green hover:bg-speech-green/90 text-white font-bricolage text-lg md:text-xl font-semibold px-10 md:px-12 py-3 md:py-4 rounded-full tracking-wide capitalize transition-colors"
+              >
+                Start Your Journey
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* How It Works Section */}
-      <div className="max-w-7xl mx-auto px-4 py-16 md:px-6 lg:px-8">
+      <div id="how-it-works" className="max-w-7xl mx-auto px-4 py-16 md:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Left Content */}
           <div className="space-y-6">
@@ -80,7 +157,10 @@ export default function Index() {
 
             {/* Call to Action Button */}
             <div className="pt-4">
-              <button className="bg-speech-green hover:bg-speech-green/90 text-white font-bricolage text-lg md:text-xl font-semibold px-10 md:px-12 py-3 md:py-4 rounded-full tracking-wide capitalize transition-colors">
+              <button
+                onClick={handleButtonClick}
+                className="bg-speech-green hover:bg-speech-green/90 text-white font-bricolage text-lg md:text-xl font-semibold px-10 md:px-12 py-3 md:py-4 rounded-full tracking-wide capitalize transition-colors"
+              >
                 Start Your Journey
               </button>
             </div>
@@ -100,7 +180,7 @@ export default function Index() {
       </div>
 
       {/* Services Section */}
-      <div className="max-w-7xl mx-auto px-4 py-16 md:px-6 lg:px-8">
+      <div id="services" className="max-w-7xl mx-auto px-4 py-16 md:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-12">
           <p className="font-bricolage text-sm font-medium text-speech-green tracking-wide uppercase mb-4">
@@ -139,7 +219,10 @@ export default function Index() {
                 />
               </div>
 
-              <button className="border border-speech-green text-speech-green hover:bg-speech-green hover:text-white font-bricolage text-lg md:text-xl font-semibold px-8 py-3 rounded-full tracking-wide capitalize transition-colors self-start">
+              <button
+                onClick={handleButtonClick}
+                className="border border-speech-green text-speech-green hover:bg-speech-green hover:text-white font-bricolage text-lg md:text-xl font-semibold px-8 py-3 rounded-full tracking-wide capitalize transition-colors self-start"
+              >
                 Learn More
               </button>
             </div>
@@ -155,7 +238,10 @@ export default function Index() {
                 </p>
               </div>
 
-              <button className="border border-speech-green text-speech-green hover:bg-speech-green hover:text-white font-bricolage text-lg md:text-xl font-semibold px-8 py-3 rounded-full tracking-wide capitalize transition-colors self-start">
+              <button
+                onClick={handleButtonClick}
+                className="border border-speech-green text-speech-green hover:bg-speech-green hover:text-white font-bricolage text-lg md:text-xl font-semibold px-8 py-3 rounded-full tracking-wide capitalize transition-colors self-start"
+              >
                 Learn More
               </button>
             </div>
@@ -178,7 +264,10 @@ export default function Index() {
                   Our certified speech-language pathologists guide you through
                   for clear, effective, and fluent communication.
                 </p>
-                <button className="bg-speech-green hover:bg-speech-green/90 text-white font-bricolage text-lg md:text-xl font-semibold px-8 py-3 rounded-full tracking-wide capitalize transition-colors">
+                <button
+                  onClick={handleButtonClick}
+                  className="bg-speech-green hover:bg-speech-green/90 text-white font-bricolage text-lg md:text-xl font-semibold px-8 py-3 rounded-full tracking-wide capitalize transition-colors"
+                >
                   Learn More
                 </button>
               </div>
@@ -226,7 +315,10 @@ export default function Index() {
               </p>
             </div>
             <div className="pt-8">
-              <button className="bg-[#EFC01D] hover:bg-[#EFC01D]/90 text-white font-bricolage text-lg md:text-xl font-semibold px-10 py-3 rounded-full tracking-wide capitalize transition-colors">
+              <button
+                onClick={handleButtonClick}
+                className="bg-[#EFC01D] hover:bg-[#EFC01D]/90 text-white font-bricolage text-lg md:text-xl font-semibold px-10 py-3 rounded-full tracking-wide capitalize transition-colors"
+              >
                 Explore
               </button>
             </div>
@@ -244,7 +336,10 @@ export default function Index() {
               </p>
             </div>
             <div className="pt-8">
-              <button className="bg-[#4CCBBB] hover:bg-[#4CCBBB]/90 text-white font-bricolage text-lg md:text-xl font-semibold px-10 py-3 rounded-full tracking-wide capitalize transition-colors">
+              <button
+                onClick={handleButtonClick}
+                className="bg-[#4CCBBB] hover:bg-[#4CCBBB]/90 text-white font-bricolage text-lg md:text-xl font-semibold px-10 py-3 rounded-full tracking-wide capitalize transition-colors"
+              >
                 Explore
               </button>
             </div>
@@ -261,7 +356,10 @@ export default function Index() {
               </p>
             </div>
             <div className="pt-8">
-              <button className="bg-[#F39CAC] hover:bg-[#F39CAC]/90 text-white font-bricolage text-lg md:text-xl font-semibold px-10 py-3 rounded-full tracking-wide capitalize transition-colors">
+              <button
+                onClick={handleButtonClick}
+                className="bg-[#F39CAC] hover:bg-[#F39CAC]/90 text-white font-bricolage text-lg md:text-xl font-semibold px-10 py-3 rounded-full tracking-wide capitalize transition-colors"
+              >
                 Explore
               </button>
             </div>
@@ -270,7 +368,7 @@ export default function Index() {
       </div>
 
       {/* Testimonials Section */}
-      <div className="max-w-7xl mx-auto px-4 py-16 md:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 py-16 md:px-6 lg:px-8 mt-16 md:mt-20 lg:mt-24">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
           {/* Left Content */}
           <div className="space-y-6">
@@ -290,50 +388,28 @@ export default function Index() {
               wellness programs.
             </p>
 
-            {/* Navigation Arrows */}
-            <div className="flex items-center space-x-4 pt-8">
-              <button className="w-14 h-14 bg-white border border-speech-green rounded-full flex items-center justify-center hover:bg-speech-green hover:text-white transition-colors group">
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M12.7071 6.29289C13.0976 6.68342 13.0976 7.31658 12.7071 7.70711L9.41421 11H17C17.5523 11 18 11.4477 18 12C18 12.5523 17.5523 13 17 13H9.41421L12.7071 16.2929C13.0976 16.6834 13.0976 17.3166 12.7071 17.7071C12.3166 18.0976 11.6834 18.0976 11.2929 17.7071L6.29289 12.7071C5.90237 12.3166 5.90237 11.6834 6.29289 11.2929L11.2929 6.29289C11.6834 5.90237 12.3166 5.90237 12.7071 6.29289Z"
-                    className="fill-speech-green group-hover:fill-white"
-                  />
-                </svg>
-              </button>
+            {/* Spacer to align Sarah K. with Mark S. */}
+            <div className="flex-1 min-h-[50px]"></div>
 
-              <button className="w-14 h-14 bg-speech-green rounded-full flex items-center justify-center hover:bg-speech-green/90 transition-colors">
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M7.29289 6.29289C6.90237 6.68342 6.90237 7.31658 7.29289 7.70711L10.5858 11H3C2.44772 11 2 11.4477 2 12C2 12.5523 2.44772 13 3 13H10.5858L7.29289 16.2929C6.90237 16.6834 6.90237 17.3166 7.29289 17.7071C7.68342 18.0976 8.31658 18.0976 8.70711 17.7071L13.7071 12.7071C14.0976 12.3166 14.0976 11.6834 13.7071 11.2929L8.70711 6.29289C8.31658 5.90237 7.68342 5.90237 7.29289 6.29289Z"
-                    fill="white"
-                  />
-                </svg>
-              </button>
+            {/* Testimonial 3 - Sarah K. */}
+            <div className="bg-[#F8ECEC] rounded-[60px] p-8 md:p-12 lg:p-15 flex-1 min-h-[393px] flex flex-col justify-between">
+              <p className="font-bricolage text-lg lg:text-xl text-speech-green leading-relaxed tracking-wide lg:leading-[26px] mb-8">
+                "The speech therapy exercises on Spasht have been incredible for my confidence.
+                I've overcome my stutter and now speak with clarity and poise in all situations.
+                This platform truly changed my life!"
+              </p>
+              <p className="font-bricolage text-lg lg:text-xl text-speech-green leading-relaxed tracking-wide lg:leading-[26px]">
+                — Sarah K., 28
+              </p>
             </div>
           </div>
 
           {/* Right Testimonials */}
-          <div className="flex flex-col sm:flex-row lg:flex-col gap-6">
-            {/* Testimonial 1 */}
+          <div className="flex flex-col gap-6">
+            {/* Testimonial 1 - Anna R. */}
             <div className="bg-[#F9E6D0] rounded-[60px] p-8 md:p-12 lg:p-15 flex-1 min-h-[393px] flex flex-col justify-between">
               <p className="font-bricolage text-lg lg:text-xl text-speech-green leading-relaxed tracking-wide lg:leading-[26px] mb-8">
-                "Solus made it so easy to find the right therapist for me. The
+                "Spasht made it so easy to find the right therapist for me. The
                 sessions have truly transformed my mindset, and I feel more in
                 control of my emotions than ever before!"
               </p>
@@ -342,11 +418,11 @@ export default function Index() {
               </p>
             </div>
 
-            {/* Testimonial 2 */}
+            {/* Testimonial 2 - Mark S. */}
             <div className="bg-speech-green rounded-[60px] p-8 md:p-12 lg:p-15 flex-1 min-h-[393px] flex flex-col justify-between">
               <p className="font-bricolage text-lg lg:text-xl text-white leading-relaxed tracking-wide lg:leading-[26px] mb-8">
                 "I was struggling with stress and anxiety, but the mindfulness
-                programs on Solus have helped me regain balance. I finally feel
+                programs on Spasht have helped me regain balance. I finally feel
                 like I'm prioritizing my mental well-being."
               </p>
               <p className="font-bricolage text-lg lg:text-xl text-white leading-relaxed tracking-wide lg:leading-[26px]">
@@ -360,12 +436,52 @@ export default function Index() {
       {/* Partners Section */}
       <div className="max-w-7xl mx-auto px-4 py-8 md:px-6 lg:px-8">
         <div className="bg-white rounded-[60px] px-8 md:px-12 lg:px-15 py-12 md:py-16">
-          <h3 className="font-bricolage text-xl md:text-2xl lg:text-[22px] font-medium text-speech-green tracking-wide leading-relaxed">
-            Our Tech
-            <br />
-            Partners
-          </h3>
-          {/* Partner logos would go here */}
+          <div className="flex flex-col md:flex-row md:items-center gap-8">
+            <h3 className="font-bricolage text-xl md:text-2xl lg:text-[22px] font-medium text-speech-green tracking-wide leading-relaxed">
+              Our Tech
+              <br />
+              Partners
+            </h3>
+
+            {/* Tech Partner Logos */}
+            <div className="flex items-center justify-between flex-1 ml-4 md:ml-8">
+
+              {/* AssemblyAI */}
+              <img
+                src="/techpartners/assemblyai.svg"
+                alt="AssemblyAI"
+                className="w-28 h-28 md:w-32 md:h-32 object-contain"
+              />
+
+              {/* Gemini */}
+              <img
+                src="/techpartners/gemini.svg"
+                alt="Gemini"
+                className="w-28 h-28 md:w-32 md:h-32 object-contain"
+              />
+
+              {/* Google Cloud */}
+              <img
+                src="/techpartners/googlecloud.svg"
+                alt="Google Cloud"
+                className="w-28 h-28 md:w-32 md:h-32 object-contain"
+              />
+
+              {/* Whisper AI */}
+              <img
+                src="/techpartners/whisperai.svg"
+                alt="Whisper AI"
+                className="w-28 h-28 md:w-32 md:h-32 object-contain"
+              />
+
+              {/* Vapi */}
+              <img
+                src="/techpartners/vapi.svg"
+                alt="Vapi"
+                className="w-24 h-24 md:w-28 md:h-28 object-contain"
+              />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -393,14 +509,17 @@ export default function Index() {
 
               {/* Call to Action Button */}
               <div className="pt-4">
-                <button className="bg-speech-green hover:bg-speech-green/90 text-white font-bricolage text-lg md:text-xl font-semibold px-10 md:px-12 py-3 md:py-4 rounded-full tracking-wide capitalize transition-colors">
+                <button
+                  onClick={handleButtonClick}
+                  className="bg-speech-green hover:bg-speech-green/90 text-white font-bricolage text-lg md:text-xl font-semibold px-10 md:px-12 py-3 md:py-4 rounded-full tracking-wide capitalize transition-colors"
+                >
                   Join the Community
                 </button>
               </div>
             </div>
 
             {/* Right Illustration */}
-            <div className="flex justify-center lg:justify-end p-8 md:p-12 lg:p-15">
+            <div className="flex justify-end p-4 md:p-6 lg:p-8 pr-0 md:pr-0 lg:pr-0">
               <img
                 src="https://api.builder.io/api/v1/image/assets/TEMP/c601bb1abad81b80a480a34170e5db0104f0dbd2?width=1425"
                 alt="Community illustration with colorful shapes and expressions"
@@ -420,11 +539,11 @@ export default function Index() {
             <div className="bg-[#F9E6D0] rounded-[60px] h-[352px] lg:h-[352px] w-full relative top-[217px]"></div>
 
             {/* Illustration */}
-            <div className="absolute inset-0 flex items-end justify-center">
+            <div className="absolute inset-0 flex items-center justify-center">
               <img
                 src="https://api.builder.io/api/v1/image/assets/TEMP/11fe8ea888334345d57fe29279d18b112f5544fb?width=754"
                 alt="FAQ illustration with colorful head and thoughts"
-                className="w-full h-[438px] object-contain flex-1 max-w-[500px]"
+                className="w-full h-[438px] object-contain object-bottom flex-1 max-w-[500px]"
               />
             </div>
           </div>
@@ -662,7 +781,7 @@ export default function Index() {
       </div>
 
       {/* Contact Section */}
-      <div className="max-w-7xl mx-auto px-4 py-16 md:px-6 lg:px-8">
+      <div id="contact" className="max-w-7xl mx-auto px-4 py-16 md:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-12">
           <p className="font-bricolage text-sm font-medium text-speech-green tracking-wide uppercase mb-4">
@@ -695,7 +814,7 @@ export default function Index() {
 
                 <div className="flex items-start">
                   <span className="font-bricolage text-lg lg:text-xl text-speech-green font-bold tracking-wide lg:leading-[34px]">
-                    Phone: +1 (234) 567-8901
+                    Phone: +91 8618688496
                   </span>
                 </div>
 
@@ -855,18 +974,18 @@ export default function Index() {
             <div className="grid grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-4 flex-1">
               {/* Column 1 - Main Pages */}
               <div className="space-y-4">
-                <a
-                  href="/about"
-                  className="block font-bricolage text-lg text-speech-green hover:opacity-70 transition-opacity tracking-wide"
+                <button
+                  onClick={() => scrollToSection('about')}
+                  className="block font-bricolage text-lg text-speech-green hover:opacity-70 transition-opacity tracking-wide text-left"
                 >
                   About
-                </a>
-                <a
-                  href="/services"
-                  className="block font-bricolage text-lg text-speech-green hover:opacity-70 transition-opacity tracking-wide"
+                </button>
+                <button
+                  onClick={() => scrollToSection('services')}
+                  className="block font-bricolage text-lg text-speech-green hover:opacity-70 transition-opacity tracking-wide text-left"
                 >
                   Services
-                </a>
+                </button>
                 <a
                   href="#"
                   className="block font-bricolage text-lg text-speech-green hover:opacity-70 transition-opacity tracking-wide"
@@ -879,12 +998,12 @@ export default function Index() {
                 >
                   Resources
                 </a>
-                <a
-                  href="/contact"
-                  className="block font-bricolage text-lg text-speech-green hover:opacity-70 transition-opacity tracking-wide"
+                <button
+                  onClick={() => scrollToSection('contact')}
+                  className="block font-bricolage text-lg text-speech-green hover:opacity-70 transition-opacity tracking-wide text-left"
                 >
                   Contact
-                </a>
+                </button>
               </div>
 
               {/* Column 2 - Social Media */}

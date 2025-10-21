@@ -7,9 +7,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./components/auth/AuthProvider";
 import Index from "./pages/Index";
-import About from "./pages/About";
-import Services from "./pages/Services";
-import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import LoginSuccess from "./pages/LoginSuccess";
 import Dashboard from "./pages/Dashboard";
@@ -17,6 +14,12 @@ import DAFSession from "./pages/DAFSession";
 import SpeechTherapy from "./pages/SpeechTherapy";
 import AIPodcast from "./pages/AIPodcast";
 import Blog from "./pages/Blog";
+import Progress from "./pages/Progress";
+import Passages from "./pages/Passages";
+import Jams from "./pages/Jams";
+import JAM from "./pages/JAM";
+import SpeechAnalysis from "./pages/SpeechAnalysis";
+import AnalysisDetail from "./pages/AnalysisDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,9 +35,6 @@ export const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
             <Route path="/login/success" element={<LoginSuccess />} />
             <Route path="/dashboard" element={<Dashboard />} />
@@ -42,6 +42,12 @@ export const App = () => (
             <Route path="/speech-therapy" element={<SpeechTherapy />} />
             <Route path="/ai-podcast" element={<AIPodcast />} />
             <Route path="/blog" element={<Blog />} />
+            <Route path="/progress" element={<Progress />} />
+            <Route path="/passages" element={<Passages />} />
+            <Route path="/jams" element={<Jams />} />
+            <Route path="/jam" element={<JAM />} />
+            <Route path="/speech-analysis" element={<SpeechAnalysis />} />
+            <Route path="/analysis/:sessionId" element={<AnalysisDetail />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
