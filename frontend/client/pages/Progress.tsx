@@ -32,6 +32,7 @@ import {
     Pie,
     Cell
 } from 'recharts';
+import { apiFetch } from '@/lib/api';
 
 export default function Progress() {
     const { user } = useAuthContext();
@@ -51,7 +52,7 @@ export default function Progress() {
                 throw new Error('User not authenticated');
             }
 
-            const response = await fetch(`/api/progress?userId=${user.uid}`);
+            const response = await apiFetch(`/api/progress?userId=${user.uid}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch progress data');
             }

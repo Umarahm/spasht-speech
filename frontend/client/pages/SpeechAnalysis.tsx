@@ -9,6 +9,7 @@ import { useAuthContext } from '../components/auth/AuthProvider';
 import { TrendingUp, BarChart3, Activity, Mic, Clock, Target, Play, Pause, Volume2, Calendar, ArrowUp, ArrowDown, TrendingDown, Zap, ChevronLeft, ChevronRight } from "lucide-react";
 import { SpeechAnalysisResult } from '../../../backend/shared/api';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
+import { apiFetch } from '@/lib/api';
 
 interface RecordingData {
     sessionId: string;
@@ -64,7 +65,7 @@ export default function SpeechAnalysis() {
         }
 
         try {
-            const response = await fetch(`/api/users/${user.uid}/analysis`);
+            const response = await apiFetch(`/api/users/${user.uid}/analysis`);
             if (!response.ok) {
                 throw new Error(`Failed to fetch analyses: ${response.status}`);
             }
