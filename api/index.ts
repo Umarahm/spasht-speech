@@ -1,10 +1,6 @@
-import serverless from 'serverless-http';
-import { createServer } from '../backend/dist/server/index.js';
-
-// Create the Express app from our backend
-const app = createServer();
-
-// Export a Vercel-compatible handler
-export default serverless(app);
+// Deprecated. Use api/[[...path]].ts catch-all instead.
+export default function handler(_req: any, res: any) {
+    res.status(404).json({ error: 'Deprecated endpoint. Use /api/* routes.' });
+}
 
 
