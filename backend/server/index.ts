@@ -8,7 +8,7 @@ import multer from "multer";
 dotenv.config();
 
 // Initialize Firebase (import after dotenv.config)
-import { db, storage, firestoreAvailable } from "./firebase.js";
+import { db, storage, firestoreAvailable } from "./firebase";
 
 // Simple audio format validation
 const validateAudioFormat = (buffer: Buffer): { isValid: boolean; format: string; needsConversion: boolean } => {
@@ -25,10 +25,10 @@ const validateAudioFormat = (buffer: Buffer): { isValid: boolean; format: string
   }
 };
 
-import { handleGeneratePassage } from "./routes/passages";
-import { handleSpeechRecognition } from "./routes/speech";
+import { handleGeneratePassage } from "./routes/passages.js";
+import { handleSpeechRecognition } from "./routes/speech.js";
 // Progress route doesn't use Firebase
-import { handleProgressAnalytics } from "./routes/progress";
+import { handleProgressAnalytics } from "./routes/progress.js";
 // JAM routes
 import {
   getJamTopic,
@@ -36,7 +36,7 @@ import {
   uploadJamRecording,
   getJamUserAnalysis,
   getJamTopics
-} from "./routes/jams";
+} from "./routes/jams.js";
 // Speech Analysis API
 import { SpeechAnalysisResponse, AnalysisSegment, AnalysisSummary } from '../shared/api';
 
