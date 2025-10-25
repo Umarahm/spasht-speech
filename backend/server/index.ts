@@ -34,12 +34,11 @@ import {
   getJamTopic,
   createJamSession,
   uploadJamRecording,
-  analyzeJamRecording,
   getJamUserAnalysis,
   getJamTopics
 } from "./routes/jams";
 // Speech Analysis API
-import { SpeechAnalysisResponse, AnalysisSegment, AnalysisSummary } from '../../shared/api';
+import { SpeechAnalysisResponse, AnalysisSegment, AnalysisSummary } from '../shared/api';
 
 // Configure multer for memory storage
 const upload = multer({
