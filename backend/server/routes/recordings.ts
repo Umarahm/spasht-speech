@@ -1,8 +1,8 @@
 import { RequestHandler } from "express";
-import { db, storage } from "../firebase";
+import { db, storage } from "../firebase.js";
 import { v4 as uuidv4 } from 'uuid';
 import multer from 'multer';
-import { RecordingSession, SpeechAnalysisResult } from '../../shared/api';
+import { RecordingSession, SpeechAnalysisResult } from '../../shared/api.js';
 
 
 // Configure multer for memory storage
