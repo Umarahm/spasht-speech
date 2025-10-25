@@ -18,7 +18,7 @@ export default defineConfig({
     }
   },
   build: {
-    outDir: "../../../dist/spa",
+    outDir: "../../backend/dist/spa",
   },
   resolve: {
     alias: {
