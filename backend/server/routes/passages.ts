@@ -1,8 +1,23 @@
 import { RequestHandler } from "express";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Initialize Gemini AI
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+// Lazy Gemini initialization to avoid crashing when key is missing in serverless
+let genAI: GoogleGenerativeAI | null = null;
+const getGenAI = (): GoogleGenerativeAI | null => {
+    if (genAI) return genAI;
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+        console.warn("GEMINI_API_KEY is missing; using fallback passages.");
+        return null;
+    }
+    try {
+        genAI = new GoogleGenerativeAI(apiKey);
+        return genAI;
+    } catch (error: any) {
+        console.error("Failed to initialize GoogleGenerativeAI:", error?.message || error);
+        return null;
+    }
+};
 
 interface PassageRequest {
     difficulty: 'beginner' | 'intermediate' | 'advanced';
@@ -19,7 +34,9 @@ interface PassageResponse {
 
 const generatePassage = async (difficulty: string, topic?: string): Promise<string> => {
     try {
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+        const client = getGenAI();
+        if (!client) throw new Error('Gemini not configured');
+        const model = client.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
 
         const prompts = {
             beginner: `Generate a simple reading passage suitable for beginner speech therapy students. The passage should be 50-75 words long, use basic vocabulary, and focus on everyday topics. Make it engaging and natural to read aloud. ${topic ? `Topic: ${topic}` : ''}`,
@@ -48,7 +65,7 @@ const generatePassage = async (difficulty: string, topic?: string): Promise<stri
 
         return passage;
     } catch (error) {
-        console.error('Error generating passage with Gemini:', error);
+        console.error('Error generating passage with Gemini:', (error as Error).message);
         // Fallback to static passages if API fails
         const fallbackPassages = {
             beginner: "The cat sat on the mat. The dog ran in the park. The sun is shining bright. I like to eat ice cream. My friend likes to play games. We have fun together every day. The birds sing in the trees. The flowers are blooming now.",
