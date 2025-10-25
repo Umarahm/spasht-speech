@@ -97,6 +97,15 @@ const uploadRecording = [
         });
       }
 
+      // Validate Firebase Storage is available
+      if (!storage) {
+        console.error('❌ Firebase Storage is not initialized');
+        return res.status(500).json({
+          error: 'Storage not available',
+          message: 'Firebase Storage is not properly configured. Please check your environment variables.'
+        });
+      }
+
       console.log('📤 Uploading audio to Firebase Storage:', {
         userId,
         sessionId,
@@ -109,7 +118,8 @@ const uploadRecording = [
       const fileName = `recordings/${userId}/${sessionId}.wav`;
       const file = storage.file(fileName);
 
-      const stream = file.createWriteStream({
+      // Use file.save() instead of createWriteStream() for better compatibility with serverless environments
+      await file.save(audioFile.buffer, {
         metadata: {
           contentType: audioFile.originalname?.toLowerCase().endsWith('.wav') ? 'audio/wav' : (audioFile.mimetype || 'audio/wav'),
           metadata: {
@@ -122,50 +132,34 @@ const uploadRecording = [
         }
       });
 
-      stream.on('error', (error) => {
-        console.error('❌ Firebase upload stream error:', error);
-        return res.status(500).json({
-          error: 'Upload failed',
-          message: 'Failed to upload audio to storage.'
-        });
+      // Get the public URL
+      const [url] = await file.getSignedUrl({
+        action: 'read',
+        expires: Date.now() + 365 * 24 * 60 * 60 * 1000, // 1 year
       });
 
-      stream.on('finish', async () => {
-        try {
-          // Get the public URL
-          const [url] = await file.getSignedUrl({
-            action: 'read',
-            expires: Date.now() + 365 * 24 * 60 * 60 * 1000, // 1 year
-          });
+      console.log('✅ Audio uploaded successfully to Firebase:', url);
 
-          console.log('✅ Audio uploaded successfully to Firebase:', url);
-
-          res.json({
-            success: true,
-            session: {
-              sessionId: sessionId,
-              status: 'completed',
-              audioUrl: url,
-              completedAt: new Date().toISOString()
-            }
-          });
-        } catch (error) {
-          console.error('❌ Error getting signed URL:', error);
-          res.status(500).json({
-            error: 'Upload verification failed',
-            message: 'Audio uploaded but failed to get access URL.'
-          });
+      res.json({
+        success: true,
+        session: {
+          sessionId: sessionId,
+          status: 'completed',
+          audioUrl: url,
+          completedAt: new Date().toISOString()
         }
       });
 
-      // Write the buffer to the stream
-      stream.end(audioFile.buffer);
-
     } catch (error) {
       console.error('❌ Error uploading recording:', error);
+      console.error('Error details:', {
+        message: (error as Error).message,
+        stack: (error as Error).stack,
+        name: (error as Error).name
+      });
       res.status(500).json({
         error: 'Failed to upload recording',
-        message: 'An error occurred while uploading the audio recording.'
+        message: (error as Error).message || 'An error occurred while uploading the audio recording.'
       });
     }
   }
