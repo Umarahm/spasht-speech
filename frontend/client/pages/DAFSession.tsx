@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { apiFetch } from '../lib/api';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../components/auth/AuthProvider';
 import Navigation from '../components/Navigation';
@@ -79,7 +80,7 @@ export default function DAFSession() {
     // Generate random reading passage
     const generatePassage = async () => {
         try {
-            const response = await fetch('/api/generate-passage', {
+            const response = await apiFetch('/api/generate-passage', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

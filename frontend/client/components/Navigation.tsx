@@ -18,7 +18,7 @@ export default function Navigation({ showDailyStreak = false, dailyStreak = 0, o
   const isLandingPage = location.pathname === "/";
 
   return (
-    <nav className="w-full px-4 py-4 md:px-6 lg:px-8 bg-speech-bg">
+    <nav className="w-full px-4 py-4 md:px-6 lg:px-8 bg-speech-bg overflow-x-hidden">
       <div className="max-w-7xl mx-auto">
         {/* Desktop Navigation */}
         <div className="hidden lg:flex items-center justify-between">
@@ -151,7 +151,7 @@ export default function Navigation({ showDailyStreak = false, dailyStreak = 0, o
               to="/"
               className="font-bricolage text-3xl md:text-4xl font-bold text-speech-green tracking-wide capitalize"
             >
-              Speech
+              Spasht
             </Link>
 
             {/* Mobile Menu Button */}

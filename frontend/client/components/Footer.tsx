@@ -1,6 +1,6 @@
 export default function Footer() {
     return (
-        <div className="max-w-7xl mx-auto px-4 py-8 md:py-16 md:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 py-8 md:py-16 md:px-6 lg:px-8 overflow-x-hidden">
             <div className="grid lg:grid-cols-2 gap-0">
                 {/* Left Section - Navigation & Links */}
                 <div className="bg-white rounded-l-[30px] md:rounded-l-[50px] lg:rounded-r-none rounded-r-[30px] md:rounded-r-[50px] p-6 md:p-12 lg:p-15 min-h-[300px] md:min-h-[460px] flex flex-col">

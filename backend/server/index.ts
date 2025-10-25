@@ -372,8 +372,9 @@ const analyzeSpeechRecording = async (req: any, res: any) => {
       });
     }
 
-    // Get ngrok URL from environment
-    const ngrokUrl = process.env.NGROK_URL;
+    // Prefer request-provided Colab/Ngrok URL, fallback to environment
+    const requestColabUrl = req.body?.colabUrl?.toString()?.trim();
+    const ngrokUrl = requestColabUrl || process.env.NGROK_URL;
     if (!ngrokUrl) {
       console.error('❌ NGROK_URL not configured');
       return res.status(500).json({
@@ -585,9 +586,19 @@ const server = createHttpServer(app);
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-console.log('🔧 Setting up CORS for origin:', process.env.FRONTEND_URL || "http://localhost:5173");
+const allowedOrigins = [
+  process.env.FRONTEND_URL || "http://localhost:5173",
+  "http://localhost:3001",
+  "https://spasht-speech.vercel.app"
+];
+
+console.log('🔧 Setting up CORS for origins:', allowedOrigins);
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:5173",
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error(`Origin ${origin} not allowed by CORS`));
+  },
   credentials: true
 }));
 app.use(express.json());

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { apiFetch } from '../lib/api';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../components/auth/AuthProvider';
 import Navigation from '../components/Navigation';
@@ -479,7 +480,7 @@ export default function SpeechTherapy() {
             formData.append('language', currentItem.language);
 
             // Send to our backend API
-            const response = await fetch('/api/speech-recognition', {
+            const response = await apiFetch('/api/speech-recognition', {
                 method: 'POST',
                 body: formData,
             });

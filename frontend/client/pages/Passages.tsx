@@ -11,6 +11,7 @@ import { FileText, BookOpen, Mic, MicOff, Play, Square, Loader2, BarChart3, Chec
 import { PassageResponse, RecordingSession, SpeechAnalysisResult } from '../../../backend/shared/api';
 import { useToast } from '@/hooks/use-toast';
 import SpeechAnalysisVisualizer from '../components/SpeechAnalysisVisualizer';
+import { apiFetch } from '../lib/api';
 import AnalysisSummaryChart from '../components/AnalysisSummaryChart';
 
 interface RecordingState {
@@ -124,7 +125,7 @@ export default function Passages() {
     const generatePassage = async () => {
         setLoading(true);
         try {
-            const response = await fetch('/api/generate-passage', {
+            const response = await apiFetch('/api/generate-passage', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -160,7 +161,7 @@ export default function Passages() {
         if (!user || !passage) return;
 
         try {
-            const response = await fetch('/api/recording-sessions', {
+            const response = await apiFetch('/api/recording-sessions', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -296,7 +297,7 @@ export default function Passages() {
             formData.append('sessionId', session.sessionId);
             formData.append('userId', user.uid);
 
-            const response = await fetch('/api/recordings/upload', {
+            const response = await apiFetch('/api/recordings/upload', {
                 method: 'POST',
                 body: formData,
             });
@@ -338,14 +339,22 @@ export default function Passages() {
                 description: "Processing your speech with advanced AI analysis...",
             });
 
-            const response = await fetch('/api/recordings/analyze-new', {
+            // Read Colab URL from saved settings
+            let colabUrl = '';
+            try {
+                const raw = localStorage.getItem('speechAppSettings');
+                if (raw) colabUrl = (JSON.parse(raw)?.colabUrl || '').toString();
+            } catch { }
+
+            const response = await apiFetch('/api/recordings/analyze-new', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     sessionId: session.sessionId,
-                    userId: user.uid
+                    userId: user.uid,
+                    colabUrl: colabUrl?.trim() || undefined
                 }),
             });
 

@@ -433,8 +433,8 @@ export default function Index() {
         </div>
       </div>
 
-      {/* Partners Section */}
-      <div className="max-w-7xl mx-auto px-4 py-8 md:px-6 lg:px-8">
+      {/* Partners Section (hidden on mobile, shown on md+) */}
+      <div className="hidden md:block max-w-7xl mx-auto px-4 py-8 md:px-6 lg:px-8">
         <div className="bg-white rounded-[60px] px-8 md:px-12 lg:px-15 py-12 md:py-16">
           <div className="flex flex-col md:flex-row md:items-center gap-8">
             <h3 className="font-bricolage text-xl md:text-2xl lg:text-[22px] font-medium text-speech-green tracking-wide leading-relaxed">
