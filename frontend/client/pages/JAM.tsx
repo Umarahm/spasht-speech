@@ -398,17 +398,8 @@ export default function JAM() {
             });
 
             if (!response.ok) {
-                let errorData;
-                try {
-                    errorData = await response.json();
-                } catch (e) {
-                    // If response is not JSON, read as text
-                    const text = await response.text();
-                    console.error('Non-JSON error response:', text);
-                    throw new Error(`Upload failed: ${text.substring(0, 100)}`);
-                }
-                console.error('Upload error details:', errorData);
-                throw new Error(errorData.message || errorData.error || `HTTP ${response.status}`);
+                const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
+                throw new Error(errorData.message || `HTTP ${response.status}`);
             }
 
             const data = await response.json();

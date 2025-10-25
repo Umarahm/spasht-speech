@@ -1,23 +1,6 @@
 {
     "version": 2,
-    "installCommand": "npm install --no-audit --no-fund",
-    "buildCommand": "npm run build:backend && npm run build:frontend",
-    "outputDirectory": "backend/dist/spa",
-    "functions": {
-        "api/[[...path]].ts": {
-            "memory": 1024,
-            "maxDuration": 60
-        }
-    },
-    "headers": [
-        {
-            "source": "/(.*)",
-            "headers": [
-                {
-                    "key": "Cross-Origin-Opener-Policy",
-                    "value": "same-origin-allow-popups"
-                }
-            ]
-        }
-    ]
+    "installCommand": "npm install --no-audit --no-fund && npm --prefix backend install --no-audit --no-fund",
+    "buildCommand": "npm run build",
+    "outputDirectory": "backend/dist/spa"
 }

@@ -318,21 +318,9 @@ export default function Passages() {
                 title: "Upload Complete",
                 description: "Your recording has been saved to Firebase.",
             });
-        } catch (error: any) {
+        } catch (error) {
             console.error('❌ Error uploading recording:', error);
-            console.error('Error details:', {
-                message: error?.message,
-                stack: error?.stack,
-                name: error?.name
-            });
             setHasUploaded(false); // Allow retry on error
-
-            // Show error toast
-            toast({
-                variant: "destructive",
-                title: "Upload Failed",
-                description: error?.message || "Failed to upload recording. Please try again.",
-            });
         }
     };
 
