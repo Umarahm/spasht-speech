@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { apiFetch } from '../lib/api';
 import { useNavigate } from 'react-router-dom';
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
@@ -152,7 +153,7 @@ export default function JAM() {
         try {
             console.log('🎯 Getting JAM topic for difficulty:', difficulty);
 
-            const response = await fetch(`/api/jam/topic?difficulty=${difficulty}`, {
+            const response = await apiFetch(`/api/jam/topic?difficulty=${difficulty}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -206,7 +207,7 @@ export default function JAM() {
             console.log('🎵 Creating JAM session for topic:', topic.id);
             console.log('📤 Request payload:', { topicId: topic.id, userId: user.uid });
 
-            const response = await fetch('/api/jam/sessions', {
+            const response = await apiFetch('/api/jam/sessions', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -391,7 +392,7 @@ export default function JAM() {
             formData.append('sessionId', session.sessionId);
             formData.append('userId', user?.uid || 'anonymous');
 
-            const response = await fetch('/api/jam/recordings/upload', {
+            const response = await apiFetch('/api/jam/recordings/upload', {
                 method: 'POST',
                 body: formData,
             });
@@ -438,14 +439,22 @@ export default function JAM() {
                 description: "Processing your speech with advanced AI analysis...",
             });
 
-            const response = await fetch('/api/recordings/analyze-new', {
+            // Read Colab URL from saved settings
+            let colabUrl = '';
+            try {
+                const raw = localStorage.getItem('speechAppSettings');
+                if (raw) colabUrl = (JSON.parse(raw)?.colabUrl || '').toString();
+            } catch { }
+
+            const response = await apiFetch('/api/recordings/analyze-new', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     sessionId: session.sessionId,
-                    userId: user.uid
+                    userId: user.uid,
+                    colabUrl: colabUrl?.trim() || undefined
                 }),
             });
 

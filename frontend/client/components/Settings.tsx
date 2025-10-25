@@ -36,6 +36,7 @@ interface AudioSettings {
     headphonesTested: boolean;
     notificationsEnabled: boolean;
     darkMode: boolean;
+    colabUrl?: string;
 }
 
 export default function Settings({ open, onOpenChange }: SettingsProps) {
@@ -49,7 +50,8 @@ export default function Settings({ open, onOpenChange }: SettingsProps) {
         headphonesConnected: false,
         headphonesTested: false,
         notificationsEnabled: true,
-        darkMode: false
+        darkMode: false,
+        colabUrl: ''
     });
 
     const [headphoneTestStatus, setHeadphoneTestStatus] = useState<'idle' | 'testing' | 'success' | 'failed'>('idle');
@@ -178,11 +180,21 @@ export default function Settings({ open, onOpenChange }: SettingsProps) {
         }
     };
 
+    // Load persisted settings when opened
+    useEffect(() => {
+        if (!open) return;
+        try {
+            const raw = localStorage.getItem('speechAppSettings');
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                setSettings(prev => ({ ...prev, ...parsed }));
+            }
+        } catch { }
+    }, [open]);
+
     // Save settings
     const saveSettings = () => {
-        // Here you would typically save to localStorage or send to backend
         localStorage.setItem('speechAppSettings', JSON.stringify(settings));
-        // You could add a toast notification here
         onOpenChange(false);
     };
 
@@ -388,6 +400,20 @@ export default function Settings({ open, onOpenChange }: SettingsProps) {
                         />
                     </div>
 
+                    {/* Colab URL override */}
+                    <div className="space-y-2">
+                        <label className="font-bricolage text-sm font-medium text-speech-green">
+                            Colab/Ngrok URL for Analysis
+                        </label>
+                        <input
+                            type="url"
+                            placeholder="https://your-colab.ngrok-free.app"
+                            value={settings.colabUrl || ''}
+                            onChange={(e) => updateSetting('colabUrl', e.target.value)}
+                            className="w-full border border-speech-green/30 rounded-md px-3 py-2 font-bricolage text-speech-green placeholder:text-speech-green/40 focus:outline-none focus:ring-2 focus:ring-speech-green/30"
+                        />
+
+                    </div>
 
                 </CardContent>
             </Card>

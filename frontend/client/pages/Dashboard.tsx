@@ -126,7 +126,7 @@ export default function Dashboard() {
 
 
     return (
-        <div className="min-h-screen bg-speech-bg">
+        <div className="min-h-screen bg-speech-bg overflow-x-hidden">
             <Navigation showDailyStreak={true} dailyStreak={dailyStreak} />
 
             {/* Greeting Section - Hero with Background Image */}
@@ -194,9 +194,9 @@ export default function Dashboard() {
             <div className="py-12 px-4 md:px-6 lg:px-8 bg-gradient-to-r from-speech-green/5 to-blue-50/50">
                 <div className="max-w-4xl mx-auto text-center">
                     {currentQuote && (
-                        <div className="relative w-full max-w-4xl mx-auto">
+                        <div className="relative w-full max-w-4xl mx-auto overflow-hidden">
                             {/* Quote Paper Background */}
-                            <div className="relative">
+                            <div className="relative overflow-hidden">
                                 <img
                                     src="/assets/QuotePaper.svg"
                                     alt="Quote Paper"
