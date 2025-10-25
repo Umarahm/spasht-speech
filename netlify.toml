@@ -5,8 +5,9 @@
 
 
 [functions]
-  external_node_modules = ["express"]
+  external_node_modules = ["express", "multer", "firebase-admin", "@google/generative-ai", "openai", "uuid", "cors", "dotenv", "zod"]
   node_bundler = "esbuild"
+  included_files = ["backend/dist/**"]
   
 [[redirects]]
   force = true
