@@ -589,7 +589,9 @@ const PORT = process.env.PORT || 3000;
 const allowedOrigins = [
   process.env.FRONTEND_URL || "http://localhost:5173",
   "http://localhost:3001",
-  "https://spasht-speech.vercel.app"
+  "https://spasht-speech.vercel.app",
+  "https://spasht.netlify.app",
+  "https://*.netlify.app"
 ];
 
 console.log('🔧 Setting up CORS for origins:', allowedOrigins);
@@ -597,6 +599,10 @@ app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) return callback(null, true);
+    // Allow any Netlify subdomain
+    if (origin.includes("netlify.app") || origin.includes("netlify.com")) {
+      return callback(null, true);
+    }
     return callback(new Error(`Origin ${origin} not allowed by CORS`));
   },
   credentials: true
