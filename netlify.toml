@@ -1,16 +1,3 @@
 [build]
-  command = "npm run build:client && npm run build:backend"
-  functions = "netlify/functions"
+  command = "npm run build:client"
   publish = "backend/dist/spa"
-
-
-[functions]
-  external_node_modules = ["express", "multer", "firebase-admin", "@google/generative-ai", "openai", "uuid", "cors", "dotenv", "zod"]
-  node_bundler = "esbuild"
-  included_files = ["backend/dist/**"]
-  
-[[redirects]]
-  force = true
-  from = "/api/*"
-  status = 200
-  to = "/.netlify/functions/api/:splat"
