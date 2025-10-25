@@ -10,7 +10,7 @@ if (!admin.apps.length) {
         throw new Error('Missing Firebase Admin credentials in environment');
     }
     admin.initializeApp({
-        credential: admin.credential.cert({ projectId, privateKey, clientEmail } as admin.ServiceAccount),
+        credential: admin.credential.cert({ projectId, privateKey, clientEmail }),
         storageBucket
     });
 }
