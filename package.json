@@ -24,6 +24,7 @@
     "test": "vitest --run",
     "format.fix": "prettier --write .",
     "typecheck": "tsc",
+    "postinstall": "npm --prefix backend install",
     "install:all": "npm install && cd backend && npm install"
   },
   "dependencies": {
