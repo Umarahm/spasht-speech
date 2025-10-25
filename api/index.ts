@@ -1,5 +1,5 @@
 import serverless from 'serverless-http';
-import { createServer } from '../backend/server/index.js';
+import { createServer } from '../backend/dist/server/index.js';
 
 // Create the Express app from our backend
 const app = createServer();

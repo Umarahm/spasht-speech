@@ -49,11 +49,15 @@ try {
 
 // Check if Firestore is available
 let firestoreAvailable = false;
+let db: any = null;
+let storage: any = null;
+
 try {
     const testDb = admin.firestore();
     // Try a simple operation to check if Firestore is accessible
     await testDb.collection('_test').limit(1).get();
     firestoreAvailable = true;
+    db = admin.firestore();
     console.log('✅ Firestore is available and accessible');
 } catch (error) {
     console.warn('⚠️ Firestore is not available or not properly configured:', error.message);
@@ -61,6 +65,12 @@ try {
     firestoreAvailable = false;
 }
 
-export const db = firestoreAvailable ? admin.firestore() : null;
-export const storage = getStorage().bucket();
-export { admin, firestoreAvailable };
+try {
+    storage = getStorage().bucket();
+    console.log('✅ Firebase Storage is available');
+} catch (error) {
+    console.error('❌ Firebase Storage is not available:', error.message);
+    // Don't throw, allow the app to start but storage-dependent endpoints will fail gracefully
+}
+
+export { db, storage, admin, firestoreAvailable };

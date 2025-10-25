@@ -284,6 +284,15 @@ export const uploadJamRecording: RequestHandler[] = [
                 });
             }
 
+            // Validate Firebase Storage is available
+            if (!storage) {
+                console.error('❌ Firebase Storage is not initialized');
+                return res.status(500).json({
+                    error: 'Storage not available',
+                    message: 'Firebase Storage is not properly configured. Please check your environment variables.'
+                });
+            }
+
             // Try to verify session exists
             let session: JamSessionResponse | null = null;
             if (firestoreAvailable && db) {
@@ -375,9 +384,14 @@ export const uploadJamRecording: RequestHandler[] = [
 
         } catch (error) {
             console.error('❌ Error uploading JAM recording:', error);
+            console.error('Error details:', {
+                message: (error as Error).message,
+                stack: (error as Error).stack,
+                name: (error as Error).name
+            });
             res.status(500).json({
                 error: 'Failed to upload recording',
-                message: 'An error occurred while uploading the JAM audio recording. Please try again.'
+                message: (error as Error).message || 'An error occurred while uploading the JAM audio recording. Please try again.'
             });
         }
     }
