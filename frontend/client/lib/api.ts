@@ -10,7 +10,7 @@ export function getApiBaseUrl(): string {
         // If app is hosted at production domain, use that origin for API (same origin)
         const { origin } = window.location;
         // Check for Netlify deployments (any Netlify subdomain or custom domain)
-        if (origin.includes("spasht.netlify.app") || origin.includes("netlify.com")) {
+        if (origin.includes("netlify.app") || origin.includes("netlify.com")) {
             return origin;
         }
         // Check for Vercel deployments
