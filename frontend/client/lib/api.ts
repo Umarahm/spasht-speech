@@ -7,9 +7,16 @@ export function getApiBaseUrl(): string {
     if (envUrl && envUrl.trim().length > 0) return envUrl.trim();
 
     if (typeof window !== "undefined") {
-        // If app is hosted at Vercel domain, use that origin for API (same origin)
+        // If app is hosted at production domain, use that origin for API (same origin)
         const { origin } = window.location;
-        if (origin.includes("spasht-speech.vercel.app")) return origin;
+        // Check for Netlify deployments (any Netlify subdomain or custom domain)
+        if (origin.includes("spasht.netlify.app") || origin.includes("netlify.com")) {
+            return origin;
+        }
+        // Check for Vercel deployments
+        if (origin.includes("spasht-speech.vercel.app") || origin.includes("vercel.app")) {
+            return origin;
+        }
     }
 
     // Fallback to localhost API during development
