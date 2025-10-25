@@ -2,16 +2,5 @@
     "version": 2,
     "installCommand": "npm install --no-audit --no-fund && npm --prefix backend install --no-audit --no-fund",
     "buildCommand": "npm run build",
-    "outputDirectory": "backend/dist/spa",
-    "headers": [
-        {
-            "source": "/(.*)",
-            "headers": [
-                {
-                    "key": "Cross-Origin-Opener-Policy",
-                    "value": "same-origin-allow-popups"
-                }
-            ]
-        }
-    ]
+    "outputDirectory": "backend/dist/spa"
 }

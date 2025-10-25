@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 // Ensure environment variables are loaded
 dotenv.config();
 
-// Initialize Firebase Admin SDK
+// Initialize Firebase Admin SDK (non-fatal if missing)
 try {
     if (!admin.apps || admin.apps.length === 0) {
         const projectId = process.env.FIREBASE_PROJECT_ID;
@@ -21,39 +21,43 @@ try {
         });
 
         if (!projectId || !privateKey || !clientEmail) {
-            throw new Error('Missing Firebase configuration. Please check your .env file.');
+            console.warn('Firebase Admin credentials are missing. Continuing without Firebase.');
+        } else {
+            admin.initializeApp({
+                credential: admin.credential.cert({
+                    projectId,
+                    privateKey,
+                    clientEmail,
+                } as admin.ServiceAccount),
+                storageBucket
+            });
+            console.log('Firebase Admin SDK initialized successfully');
         }
-
-        admin.initializeApp({
-            credential: admin.credential.cert({
-                projectId,
-                privateKey,
-                clientEmail,
-            } as admin.ServiceAccount),
-            storageBucket
-        });
-        console.log('Firebase Admin SDK initialized successfully');
     } else {
         console.log('Firebase Admin SDK already initialized');
     }
-} catch (error) {
-    console.error('Failed to initialize Firebase Admin SDK:', error);
+} catch (error: any) {
+    console.error('Failed to initialize Firebase Admin SDK:', error?.message || error);
     console.error('Environment variables available:', {
         FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID ? 'present' : 'missing',
         FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY ? 'present' : 'missing',
         FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL ? 'present' : 'missing',
         FIREBASE_STORAGE_BUCKET: process.env.FIREBASE_STORAGE_BUCKET ? 'present' : 'missing'
     });
-    throw error;
+    // Do not throw; continue without Firebase
 }
 
 // Check if Firestore is available
 let firestoreAvailable = false;
+let db: any = null;
+let storage: any = null;
+
 try {
     const testDb = admin.firestore();
     // Try a simple operation to check if Firestore is accessible
     await testDb.collection('_test').limit(1).get();
     firestoreAvailable = true;
+    db = admin.firestore();
     console.log('✅ Firestore is available and accessible');
 } catch (error) {
     console.warn('⚠️ Firestore is not available or not properly configured:', error.message);
@@ -61,6 +65,12 @@ try {
     firestoreAvailable = false;
 }
 
-export const db = firestoreAvailable ? admin.firestore() : null;
-export const storage = getStorage().bucket();
-export { admin, firestoreAvailable };
+try {
+    storage = getStorage().bucket();
+    console.log('✅ Firebase Storage is available');
+} catch (error) {
+    console.error('❌ Firebase Storage is not available:', error.message);
+    // Don't throw, allow the app to start but storage-dependent endpoints will fail gracefully
+}
+
+export { db, storage, admin, firestoreAvailable };
