@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { ProgressAnalyticsResponse } from "../../shared/api";
+import { ProgressAnalyticsResponse } from "../../shared/api.js";
 
 export const handleProgressAnalytics: RequestHandler = async (req, res) => {
     try {

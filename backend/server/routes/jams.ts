@@ -1,8 +1,8 @@
 import { RequestHandler } from "express";
-import { db, storage, firestoreAvailable } from "../firebase";
+import { db, storage, firestoreAvailable } from "../firebase.js";
 import { v4 as uuidv4 } from 'uuid';
 import multer from 'multer';
-import { JamTopic, JamSessionRequest, JamSessionResponse, JamTopicRequest, JamTopicResponse, SpeechAnalysisResult } from '../../shared/api';
+import { JamTopic, JamSessionRequest, JamSessionResponse, JamTopicRequest, JamTopicResponse, SpeechAnalysisResult } from '../../shared/api.js';
 
 // Simple audio format validation
 const validateAudioFormat = (buffer: Buffer): { isValid: boolean; format: string; needsConversion: boolean } => {
