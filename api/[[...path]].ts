@@ -5,6 +5,13 @@ import { createServer } from '../backend/dist/server/index.js';
 const app = createServer();
 
 // Export a Vercel-compatible handler for any /api/* path
-export default serverless(app);
+export default serverless(app, {
+    request(request, event, context) {
+        request.vercel = {
+            event,
+            context
+        };
+    }
+});
 
 

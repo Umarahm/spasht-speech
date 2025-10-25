@@ -37,7 +37,11 @@
     "@google/generative-ai": "^0.24.1",
     "react-window": "^2.2.1",
     "react-window-infinite-loader": "^2.0.0",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "cors": "^2.8.5",
+    "multer": "^2.0.2",
+    "uuid": "^13.0.0",
+    "serverless-http": "^3.2.0"
   },
   "devDependencies": {
     "@types/busboy": "^1.5.3",
