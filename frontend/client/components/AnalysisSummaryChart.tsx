@@ -147,3 +147,5 @@ const getColor = (label: string) => {
 };
 
 export default AnalysisSummaryChart;
+
+

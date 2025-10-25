@@ -183,7 +183,8 @@ export const getJamTopic: RequestHandler = async (req, res) => {
  */
 export const createJamSession: RequestHandler = async (req, res) => {
     try {
-        const { topicId, userId }: JamSessionRequest = req.body;
+        const { topicId }: JamSessionRequest = req.body;
+        const { userId } = req.body;
 
         // Validate required fields
         if (!topicId) {
