@@ -15,6 +15,7 @@ type Quote = {
     author: string;
     category: string;
 };
+
 import { ExternalLink, Youtube, MessageSquare, BookOpen, Users, Calendar, Newspaper, Quote, Target, Trophy, Flame } from 'lucide-react';
 
 export default function Dashboard() {
@@ -53,7 +54,7 @@ export default function Dashboard() {
         } else if (hour >= 12 && hour < 18) {
             return {
                 message: 'Good afternoon',
-                image: '/assets/homepage/Good morning.svg',
+                image: '/assets/homepage/Good Afternoon.svg',
                 bgColor: 'bg-gradient-to-br from-blue-100 to-cyan-50'
             };
         } else {
@@ -129,62 +130,53 @@ export default function Dashboard() {
         <div className="min-h-screen bg-speech-bg overflow-x-hidden">
             <Navigation showDailyStreak={true} dailyStreak={dailyStreak} />
 
-            {/* Greeting Section - Hero with Background Image */}
-            <div className="relative min-h-[75vh] flex items-center justify-center overflow-hidden">
-                {/* Background Image */}
-                <div className="absolute inset-0">
-                    {!backgroundImageLoaded && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-speech-bg">
-                            <div className="text-center">
-                                <div className="loader mx-auto mb-4"></div>
-                                <p className="font-bricolage text-lg text-speech-green">Loading background...</p>
-                            </div>
-                        </div>
-                    )}
-                    <img
-                        src={greeting.image}
-                        alt={greeting.message}
-                        className={`w-full h-full ${greeting.message === 'Good evening'
-                            ? 'object-cover object-center scale-125'
-                            : 'object-cover object-center scale-110'
-                            } ${backgroundImageLoaded ? 'opacity-100' : 'opacity-0'}`}
-                        onLoad={() => setBackgroundImageLoaded(true)}
-                    />
-                    {/* Elegant gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60"></div>
-                </div>
-
-                {/* Content Overlay - Clean and Modern */}
-                <div className="relative z-10 max-w-6xl mx-auto px-6 md:px-8 lg:px-12 text-center">
-                    {/* Main greeting with elegant spacing */}
-                    <div className="mb-8">
-                        <h1 className="font-bricolage text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 leading-tight tracking-wide drop-shadow-lg">
-                            {greeting.message}
-                        </h1>
-                        <h2 className="font-bricolage text-2xl md:text-3xl lg:text-4xl font-medium text-white/90 tracking-wide drop-shadow-md">
-                            {user.displayName || user.email?.split('@')[0]}
-                        </h2>
+            {/* Greeting Section - Hero with Rounded Shape */}
+            <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8">
+                <div className="relative bg-gradient-to-br from-[#F9E6D0] to-[#F5DCC4] rounded-[40px] sm:rounded-[50px] md:rounded-[60px] lg:rounded-[70px] overflow-hidden min-h-[400px] sm:min-h-[500px] md:min-h-[600px] lg:min-h-[668px] flex items-center justify-center shadow-2xl">
+                    {/* Background Pattern */}
+                    <div className="absolute inset-0 opacity-5">
+                        <div className="absolute top-10 left-10 w-32 h-32 bg-speech-green rounded-full blur-3xl"></div>
+                        <div className="absolute bottom-10 right-10 w-40 h-40 bg-speech-green rounded-full blur-3xl"></div>
                     </div>
 
-                    {/* Welcome message in elegant glassmorphism card - Hidden on mobile */}
-                    <div className="hidden md:block bg-white/10 backdrop-blur-md rounded-3xl p-8 md:p-10 max-w-4xl mx-auto border border-white/20 shadow-2xl">
-                        <p className="font-bricolage text-lg md:text-xl text-white/95 leading-relaxed tracking-wide mb-8">
-                            Welcome back to your personal speech therapy dashboard.
-                            Ready to continue your journey towards better communication?
-                        </p>
+                    {/* Background Image */}
+                    <div className="absolute inset-0">
+                        {!backgroundImageLoaded && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-speech-bg">
+                                <div className="text-center">
+                                    <div className="loader mx-auto mb-4"></div>
+                                    <p className="font-bricolage text-lg text-speech-green">Loading background...</p>
+                                </div>
+                            </div>
+                        )}
+                        <img
+                            src={greeting.image}
+                            alt={greeting.message}
+                            className={`w-full h-full object-cover object-center ${backgroundImageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                            onLoad={() => setBackgroundImageLoaded(true)}
+                        />
+                    </div>
 
-                        {/* Stats in subtle cards */}
-                        <div className="flex flex-wrap justify-center gap-6">
-                            <div className="bg-white/15 backdrop-blur-sm rounded-2xl px-6 py-4 border border-white/10">
-                                <span className="font-bricolage text-sm text-white/90 tracking-wide">
-                                    Last session: Today
-                                </span>
-                            </div>
-                            <div className="bg-white/15 backdrop-blur-sm rounded-2xl px-6 py-4 border border-white/10">
-                                <span className="font-bricolage text-sm text-white/90 tracking-wide">
-                                    Progress: +15% this week
-                                </span>
-                            </div>
+                    {/* Content */}
+                    <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 text-center">
+                        {/* Greeting */}
+                        <div className="mb-6 md:mb-8">
+                            <h1 className="font-bricolage text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-speech-green mb-3 md:mb-4 leading-tight tracking-wide drop-shadow-sm">
+                                {greeting.message}
+                            </h1>
+                            <h2 className="font-bricolage text-xl sm:text-2xl md:text-3xl lg:text-4xl font-medium text-speech-green/90 tracking-wide drop-shadow-sm">
+                                {user.displayName || user.email?.split('@')[0]}
+                            </h2>
+                        </div>
+
+                        {/* Welcome Message Section */}
+                        <div className="bg-white/95 backdrop-blur-sm rounded-[40px] p-6 sm:p-8 md:p-10 max-w-3xl mx-auto shadow-2xl border-4 border-speech-green/30 transform hover:scale-[1.02] transition-transform duration-300">
+                            <p className="font-bricolage text-lg sm:text-xl md:text-2xl text-speech-green leading-relaxed tracking-wide mb-4 md:mb-6">
+                                Welcome back to your personal speech therapy dashboard.
+                            </p>
+                            <p className="font-bricolage text-base sm:text-lg md:text-xl text-speech-green/80 leading-relaxed tracking-wide">
+                                Ready to continue your journey towards better communication?
+                            </p>
                         </div>
                     </div>
                 </div>

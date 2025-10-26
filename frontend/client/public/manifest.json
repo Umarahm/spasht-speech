@@ -1,0 +1,56 @@
+{
+    "name": "Spasht - Speech Therapy App",
+    "short_name": "Spasht",
+    "description": "Your personal speech therapy platform for better communication",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#10B981",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "/Logo.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/Logo.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "categories": [
+        "health",
+        "education",
+        "medical"
+    ],
+    "screenshots": [],
+    "shortcuts": [
+        {
+            "name": "Speech Analysis",
+            "short_name": "Analysis",
+            "description": "Analyze your speech patterns",
+            "url": "/speech-analysis",
+            "icons": [
+                {
+                    "src": "/Logo.png",
+                    "sizes": "192x192"
+                }
+            ]
+        },
+        {
+            "name": "Progress",
+            "short_name": "Progress",
+            "description": "Track your progress",
+            "url": "/progress",
+            "icons": [
+                {
+                    "src": "/Logo.png",
+                    "sizes": "192x192"
+                }
+            ]
+        }
+    ]
+}

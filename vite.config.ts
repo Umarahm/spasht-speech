@@ -19,7 +19,13 @@ export default defineConfig({
   },
   build: {
     outDir: "../../backend/dist/spa",
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, "frontend/client/index.html"),
+      },
+    },
   },
+  publicDir: path.resolve(__dirname, "frontend/client/public"),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./frontend/client"),
