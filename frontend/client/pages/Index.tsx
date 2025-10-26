@@ -519,11 +519,11 @@ export default function Index() {
             </div>
 
             {/* Right Illustration */}
-            <div className="flex justify-end p-4 md:p-6 lg:p-8 pr-0 md:pr-0 lg:pr-0">
+            <div className="flex justify-end p-2 sm:p-4 md:p-6 lg:p-8 pr-0 md:pr-0 lg:pr-0">
               <img
                 src="https://api.builder.io/api/v1/image/assets/TEMP/c601bb1abad81b80a480a34170e5db0104f0dbd2?width=1425"
                 alt="Community illustration with colorful shapes and expressions"
-                className="w-auto max-w-[712px] h-auto object-contain flex-shrink-0"
+                className="w-auto max-w-[280px] sm:max-w-[400px] md:max-w-[500px] lg:max-w-[712px] h-auto object-contain flex-shrink-0"
               />
             </div>
           </div>
@@ -543,7 +543,7 @@ export default function Index() {
               <img
                 src="https://api.builder.io/api/v1/image/assets/TEMP/11fe8ea888334345d57fe29279d18b112f5544fb?width=754"
                 alt="FAQ illustration with colorful head and thoughts"
-                className="w-full h-[438px] object-contain object-bottom flex-1 max-w-[500px]"
+                className="w-full h-[280px] sm:h-[350px] md:h-[438px] object-contain object-bottom flex-1 max-w-[300px] sm:max-w-[400px] md:max-w-[500px]"
               />
             </div>
           </div>

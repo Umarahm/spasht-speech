@@ -169,8 +169,8 @@ export default function Dashboard() {
                             </h2>
                         </div>
 
-                        {/* Welcome Message Section */}
-                        <div className="bg-white/95 backdrop-blur-sm rounded-[40px] p-6 sm:p-8 md:p-10 max-w-3xl mx-auto shadow-2xl border-4 border-speech-green/30 transform hover:scale-[1.02] transition-transform duration-300">
+                        {/* Welcome Message Section - Hidden on mobile */}
+                        <div className="hidden md:block bg-white/95 backdrop-blur-sm rounded-[40px] p-6 sm:p-8 md:p-10 max-w-3xl mx-auto shadow-2xl border-4 border-speech-green/30 transform hover:scale-[1.02] transition-transform duration-300">
                             <p className="font-bricolage text-lg sm:text-xl md:text-2xl text-speech-green leading-relaxed tracking-wide mb-4 md:mb-6">
                                 Welcome back to your personal speech therapy dashboard.
                             </p>
@@ -183,44 +183,44 @@ export default function Dashboard() {
             </div>
 
             {/* Quotes Section */}
-            <div className="py-12 px-4 md:px-6 lg:px-8 bg-gradient-to-r from-speech-green/5 to-blue-50/50">
+            <div className="py-8 sm:py-12 px-2 sm:px-4 md:px-6 lg:px-8 bg-gradient-to-r from-speech-green/5 to-blue-50/50">
                 <div className="max-w-4xl mx-auto text-center">
                     {currentQuote && (
-                        <div className="relative w-full max-w-4xl mx-auto overflow-hidden">
+                        <div className="relative w-full max-w-4xl mx-auto overflow-visible">
                             {/* Quote Paper Background */}
-                            <div className="relative overflow-hidden">
+                            <div className="relative overflow-visible">
                                 <img
                                     src="/assets/QuotePaper.svg"
                                     alt="Quote Paper"
-                                    className="w-full h-auto scale-110"
+                                    className="w-full h-auto md:scale-110"
                                 />
 
                                 {/* Quote Text on Paper */}
-                                <div className="absolute inset-0 flex flex-col justify-center items-center text-center px-6 md:px-8 py-8 md:py-12">
-                                    <blockquote className="font-bricolage text-base md:text-lg lg:text-xl text-speech-green/90 leading-relaxed mb-3 md:mb-4 tracking-wide">
+                                <div className="absolute inset-0 flex flex-col justify-center items-center text-center px-4 sm:px-6 md:px-8 py-6 sm:py-8 md:py-12">
+                                    <blockquote className="font-bricolage text-sm sm:text-base md:text-lg lg:text-xl text-speech-green/90 leading-relaxed mb-2 sm:mb-3 md:mb-4 tracking-wide px-2">
                                         "{currentQuote.text}"
                                     </blockquote>
-                                    <cite className="font-bricolage text-sm md:text-base text-speech-green/70 font-semibold tracking-wide">
+                                    <cite className="font-bricolage text-xs sm:text-sm md:text-base text-speech-green/70 font-semibold tracking-wide">
                                         — {currentQuote.author}
                                     </cite>
                                 </div>
                             </div>
 
-                            {/* Left Tape */}
-                            <div className="absolute -top-8 -left-8 z-10">
+                            {/* Left Tape - Hidden on mobile */}
+                            <div className="hidden sm:block absolute -top-6 sm:-top-8 -left-6 sm:-left-8 z-10">
                                 <img
                                     src="/assets/Tape.svg"
                                     alt="Tape"
-                                    className="w-24 h-auto transform -rotate-45"
+                                    className="w-16 sm:w-20 md:w-24 h-auto transform -rotate-45"
                                 />
                             </div>
 
-                            {/* Right Tape */}
-                            <div className="absolute -top-8 -right-8 z-10">
+                            {/* Right Tape - Hidden on mobile */}
+                            <div className="hidden sm:block absolute -top-6 sm:-top-8 -right-6 sm:-right-8 z-10">
                                 <img
                                     src="/assets/Tape.svg"
                                     alt="Tape"
-                                    className="w-24 h-auto transform rotate-45"
+                                    className="w-16 sm:w-20 md:w-24 h-auto transform rotate-45"
                                 />
                             </div>
                         </div>

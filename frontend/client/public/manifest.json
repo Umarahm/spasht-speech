@@ -6,8 +6,14 @@
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#10B981",
-    "orientation": "portrait-primary",
+    "orientation": "any",
     "icons": [
+        {
+            "src": "/Logo.png",
+            "sizes": "128x128",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
         {
             "src": "/Logo.png",
             "sizes": "192x192",
@@ -16,7 +22,7 @@
         },
         {
             "src": "/Logo.png",
-            "sizes": "512x512",
+            "sizes": "256x256",
             "type": "image/png",
             "purpose": "any maskable"
         }
@@ -36,7 +42,7 @@
             "icons": [
                 {
                     "src": "/Logo.png",
-                    "sizes": "192x192"
+                    "sizes": "128x128"
                 }
             ]
         },
@@ -48,7 +54,7 @@
             "icons": [
                 {
                     "src": "/Logo.png",
-                    "sizes": "192x192"
+                    "sizes": "128x128"
                 }
             ]
         }
