@@ -9,19 +9,19 @@
     "orientation": "any",
     "icons": [
         {
-            "src": "/Logo.png",
+            "src": "/assets/Logo_White.png",
             "sizes": "128x128",
             "type": "image/png",
             "purpose": "any maskable"
         },
         {
-            "src": "/Logo.png",
+            "src": "/assets/Logo_White.png",
             "sizes": "192x192",
             "type": "image/png",
             "purpose": "any maskable"
         },
         {
-            "src": "/Logo.png",
+            "src": "/assets/Logo_White.png",
             "sizes": "256x256",
             "type": "image/png",
             "purpose": "any maskable"
@@ -41,7 +41,7 @@
             "url": "/speech-analysis",
             "icons": [
                 {
-                    "src": "/Logo.png",
+                    "src": "/assets/Logo_White.png",
                     "sizes": "128x128"
                 }
             ]
@@ -53,7 +53,7 @@
             "url": "/progress",
             "icons": [
                 {
-                    "src": "/Logo.png",
+                    "src": "/assets/Logo_White.png",
                     "sizes": "128x128"
                 }
             ]
