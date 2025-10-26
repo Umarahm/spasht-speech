@@ -85,9 +85,16 @@ export default function Navigation({ showDailyStreak = false, dailyStreak = 0, o
           <div className="absolute left-1/2 transform -translate-x-1/2">
             <Link
               to={user ? "/dashboard" : "/"}
-              className="font-bricolage text-5xl font-bold text-speech-green tracking-wide capitalize"
+              className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
             >
-              Spasht
+              <img
+                src="/Logo.png"
+                alt="Spasht Logo"
+                className="w-10 h-10 md:w-12 md:h-12"
+              />
+              <span className="font-bricolage text-4xl md:text-5xl font-bold text-speech-green tracking-wide capitalize">
+                Spasht
+              </span>
             </Link>
           </div>
 
@@ -149,9 +156,16 @@ export default function Navigation({ showDailyStreak = false, dailyStreak = 0, o
             {/* Mobile Brand */}
             <Link
               to="/"
-              className="font-bricolage text-3xl md:text-4xl font-bold text-speech-green tracking-wide capitalize"
+              className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
             >
-              Spasht
+              <img
+                src="/Logo.png"
+                alt="Spasht Logo"
+                className="w-8 h-8 sm:w-10 sm:h-10"
+              />
+              <span className="font-bricolage text-2xl sm:text-3xl md:text-4xl font-bold text-speech-green tracking-wide capitalize">
+                Spasht
+              </span>
             </Link>
 
             {/* Mobile Menu Button */}

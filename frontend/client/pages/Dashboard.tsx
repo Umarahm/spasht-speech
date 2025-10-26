@@ -159,6 +159,15 @@ export default function Dashboard() {
 
                     {/* Content */}
                     <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 text-center">
+                        {/* Logo */}
+                        <div className="mb-6 md:mb-8">
+                            <img
+                                src="/Logo.png"
+                                alt="Spasht Logo"
+                                className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 mx-auto"
+                            />
+                        </div>
+
                         {/* Greeting */}
                         <div className="mb-6 md:mb-8">
                             <h1 className="font-bricolage text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-speech-green mb-3 md:mb-4 leading-tight tracking-wide drop-shadow-sm">
@@ -170,7 +179,7 @@ export default function Dashboard() {
                         </div>
 
                         {/* Welcome Message Section - Hidden on mobile */}
-                        <div className="hidden md:block bg-white/95 backdrop-blur-sm rounded-[40px] p-6 sm:p-8 md:p-10 max-w-3xl mx-auto shadow-2xl border-4 border-speech-green/30 transform hover:scale-[1.02] transition-transform duration-300">
+                        <div className="hidden md:block bg-white/40 backdrop-blur-sm rounded-[40px] p-6 sm:p-8 md:p-10 max-w-3xl mx-auto shadow-2xl border-4 border-speech-green/30 transform hover:scale-[1.02] transition-transform duration-300">
                             <p className="font-bricolage text-lg sm:text-xl md:text-2xl text-speech-green leading-relaxed tracking-wide mb-4 md:mb-6">
                                 Welcome back to your personal speech therapy dashboard.
                             </p>
