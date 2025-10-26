@@ -5,9 +5,16 @@ export default function Footer() {
                 {/* Left Section - Navigation & Links */}
                 <div className="bg-white rounded-l-[30px] md:rounded-l-[50px] lg:rounded-r-none rounded-r-[30px] md:rounded-r-[50px] p-6 md:p-12 lg:p-15 min-h-[300px] md:min-h-[460px] flex flex-col">
                     {/* Logo */}
-                    <h2 className="font-bricolage text-2xl md:text-4xl lg:text-[40px] font-bold text-speech-green leading-tight tracking-wide capitalize mb-6 md:mb-8">
-                        Spasht
-                    </h2>
+                    <div className="flex items-center space-x-3 mb-6 md:mb-8">
+                        <img
+                            src="/Logo.png"
+                            alt="Spasht Logo"
+                            className="w-10 h-10 md:w-12 md:h-12"
+                        />
+                        <h2 className="font-bricolage text-2xl md:text-4xl lg:text-[40px] font-bold text-speech-green leading-tight tracking-wide capitalize">
+                            Spasht
+                        </h2>
+                    </div>
 
                     {/* Navigation Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 md:gap-x-8 gap-y-3 md:gap-y-4 flex-1">

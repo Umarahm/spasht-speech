@@ -2,6 +2,7 @@ import Navigation from "@/components/Navigation";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../components/auth/AuthProvider";
+import Footer from "@/components/Footer";
 
 export default function Index() {
   const [openAccordion, setOpenAccordion] = useState<number | null>(null);
@@ -35,8 +36,8 @@ export default function Index() {
       <Navigation onScrollToSection={scrollToSection} />
 
       {/* Hero Section */}
-      <section id="home" className="max-w-7xl mx-auto px-4 py-8 md:px-6 lg:px-8">
-        <div className="relative bg-gradient-to-br from-[#F9E6D0] to-[#F5DCC4] rounded-[70px] overflow-hidden min-h-[500px] md:min-h-[600px] lg:min-h-[668px] flex items-center justify-center shadow-2xl">
+      <section id="home" className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="relative bg-gradient-to-br from-[#F9E6D0] to-[#F5DCC4] rounded-[40px] sm:rounded-[50px] md:rounded-[60px] lg:rounded-[70px] overflow-hidden min-h-[400px] sm:min-h-[500px] md:min-h-[600px] lg:min-h-[668px] flex items-center justify-center shadow-2xl">
           {/* Background Pattern */}
           <div className="absolute inset-0 opacity-5">
             <div className="absolute top-10 left-10 w-32 h-32 bg-speech-green rounded-full blur-3xl"></div>
@@ -62,12 +63,21 @@ export default function Index() {
           </div>
 
           {/* Main Content */}
-          <div className="relative z-10 max-w-4xl mx-auto px-6 md:px-8 lg:px-12 text-center">
-            <h1 className="font-bricolage text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-speech-green mb-6 md:mb-8 leading-tight drop-shadow-sm">
+          <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 text-center">
+            {/* Logo */}
+            <div className="mb-6 md:mb-8">
+              <img
+                src="/Logo.png"
+                alt="Spasht Logo"
+                className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 mx-auto"
+              />
+            </div>
+
+            <h1 className="font-bricolage text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-speech-green mb-3 md:mb-4 leading-tight tracking-wide drop-shadow-sm">
               Start Your Speech Journey
             </h1>
 
-            <p className="font-bricolage text-lg sm:text-xl md:text-2xl lg:text-2xl text-speech-green/90 mb-8 md:mb-12 max-w-2xl mx-auto leading-relaxed tracking-wide">
+            <p className="font-bricolage text-lg sm:text-xl md:text-2xl text-speech-green/90 mb-6 sm:mb-8 md:mb-12 max-w-2xl mx-auto leading-relaxed tracking-wide">
               Connect with AI therapists, AI counselors, and community to
               support your speech journey.
             </p>
@@ -87,7 +97,7 @@ export default function Index() {
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Left Image */}
           <div className="flex justify-center lg:justify-start">
-            <div className="relative w-full max-w-[550px]">
+            <div className="relative w-full max-w-[350px] sm:max-w-[450px] md:max-w-[550px]">
               <img
                 src="/assets/Empowering.png"
                 alt="Empowering Voices, Transforming Lives illustration"
@@ -168,11 +178,11 @@ export default function Index() {
 
           {/* Right Illustration Container */}
           <div className="flex justify-center lg:justify-end">
-            <div className="relative bg-speech-green rounded-[60px] w-full max-w-[550px] aspect-[550/564] flex items-center justify-center overflow-hidden">
+            <div className="relative bg-speech-green rounded-[40px] sm:rounded-[50px] md:rounded-[60px] w-full max-w-[350px] sm:max-w-[450px] md:max-w-[550px] aspect-[550/564] flex items-center justify-center overflow-hidden">
               <img
                 src="https://api.builder.io/api/v1/image/assets/TEMP/94d811e65f6cd29f35f00f5fed21001c8bbdd9cf?width=832"
                 alt="AI Voice Coach illustration showing speech therapy process"
-                className="w-[75%] h-auto object-contain"
+                className="w-[65%] sm:w-[70%] md:w-[75%] h-auto object-contain"
               />
             </div>
           </div>
@@ -211,7 +221,7 @@ export default function Index() {
               </div>
 
               {/* Illustration */}
-              <div className="absolute right-8 top-8 lg:right-12 lg:top-12 w-32 md:w-48 lg:w-56">
+              <div className="absolute right-4 top-4 sm:right-6 sm:top-6 md:right-8 md:top-8 lg:right-12 lg:top-12 w-24 sm:w-32 md:w-48 lg:w-56">
                 <img
                   src="https://api.builder.io/api/v1/image/assets/TEMP/f96e34184b20fb2e857d59c9b440f2aed1ee678e?width=458"
                   alt="Mindfulness and meditation illustration"
@@ -277,7 +287,7 @@ export default function Index() {
                 <img
                   src="https://api.builder.io/api/v1/image/assets/TEMP/38bc7dc4b09c2ea5265fe9d32320e9d2f70b0ce9?width=1020"
                   alt="Wellness coaching illustration"
-                  className="w-full max-w-md lg:max-w-[554px] h-auto object-contain"
+                  className="w-full max-w-[280px] sm:max-w-[350px] md:max-w-md lg:max-w-[554px] h-auto object-contain"
                 />
               </div>
             </div>
@@ -536,14 +546,12 @@ export default function Index() {
           {/* Left Content - Illustration */}
           <div className="relative">
             {/* Background container */}
-            <div className="bg-[#F9E6D0] rounded-[60px] h-[352px] lg:h-[352px] w-full relative top-[217px]"></div>
-
-            {/* Illustration */}
-            <div className="absolute inset-0 flex items-center justify-center">
+            <div className="bg-[#F9E6D0] rounded-[40px] sm:rounded-[50px] md:rounded-[60px] h-[280px] sm:h-[320px] md:h-[352px] w-full flex items-center justify-center">
+              {/* Illustration - Centered within background */}
               <img
                 src="https://api.builder.io/api/v1/image/assets/TEMP/11fe8ea888334345d57fe29279d18b112f5544fb?width=754"
                 alt="FAQ illustration with colorful head and thoughts"
-                className="w-full h-[280px] sm:h-[350px] md:h-[438px] object-contain object-bottom flex-1 max-w-[300px] sm:max-w-[400px] md:max-w-[500px]"
+                className="w-full h-[240px] sm:h-[280px] md:h-[320px] object-contain object-center max-w-[250px] sm:max-w-[300px] md:max-w-[400px]"
               />
             </div>
           </div>
@@ -960,126 +968,8 @@ export default function Index() {
         </div>
       </div>
 
-      {/* Footer Section */}
-      <div className="max-w-7xl mx-auto px-4 py-16 md:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-0">
-          {/* Left Section - Navigation & Links */}
-          <div className="bg-white rounded-l-[50px] lg:rounded-r-none rounded-r-[50px] p-8 md:p-12 lg:p-15 min-h-[460px] flex flex-col">
-            {/* Logo */}
-            <h2 className="font-bricolage text-3xl md:text-4xl lg:text-[40px] font-bold text-speech-green leading-tight tracking-wide capitalize mb-8">
-              Speech
-            </h2>
 
-            {/* Navigation Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-4 flex-1">
-              {/* Column 1 - Main Pages */}
-              <div className="space-y-4">
-                <button
-                  onClick={() => scrollToSection('about')}
-                  className="block font-bricolage text-lg text-speech-green hover:opacity-70 transition-opacity tracking-wide text-left"
-                >
-                  About
-                </button>
-                <button
-                  onClick={() => scrollToSection('services')}
-                  className="block font-bricolage text-lg text-speech-green hover:opacity-70 transition-opacity tracking-wide text-left"
-                >
-                  Services
-                </button>
-                <a
-                  href="#"
-                  className="block font-bricolage text-lg text-speech-green hover:opacity-70 transition-opacity tracking-wide"
-                >
-                  Therapists
-                </a>
-                <a
-                  href="#"
-                  className="block font-bricolage text-lg text-speech-green hover:opacity-70 transition-opacity tracking-wide"
-                >
-                  Resources
-                </a>
-                <button
-                  onClick={() => scrollToSection('contact')}
-                  className="block font-bricolage text-lg text-speech-green hover:opacity-70 transition-opacity tracking-wide text-left"
-                >
-                  Contact
-                </button>
-              </div>
-
-              {/* Column 2 - Social Media */}
-              <div className="space-y-4">
-                <a
-                  href="#"
-                  className="block font-bricolage text-lg text-speech-green hover:opacity-70 transition-opacity tracking-wide"
-                >
-                  Instagram
-                </a>
-                <a
-                  href="#"
-                  className="block font-bricolage text-lg text-speech-green hover:opacity-70 transition-opacity tracking-wide"
-                >
-                  Facebook
-                </a>
-                <a
-                  href="#"
-                  className="block font-bricolage text-lg text-speech-green hover:opacity-70 transition-opacity tracking-wide"
-                >
-                  YouTube
-                </a>
-                <a
-                  href="#"
-                  className="block font-bricolage text-lg text-speech-green hover:opacity-70 transition-opacity tracking-wide"
-                >
-                  LinkedIn
-                </a>
-              </div>
-
-              {/* Column 3 - Legal */}
-              <div className="space-y-4">
-                <a
-                  href="#"
-                  className="block font-bricolage text-lg text-speech-green hover:opacity-70 transition-opacity tracking-wide"
-                >
-                  Terms Of Use
-                </a>
-                <a
-                  href="#"
-                  className="block font-bricolage text-lg text-speech-green hover:opacity-70 transition-opacity tracking-wide"
-                >
-                  Privacy Policy
-                </a>
-              </div>
-            </div>
-
-            {/* Copyright */}
-            <div className="mt-8 pt-4">
-              <p className="font-bricolage text-lg text-gray-400 tracking-wide">
-                © [2025] Spasht. All Rights Reserved.
-              </p>
-            </div>
-          </div>
-
-          {/* Right Section - CTA */}
-          <div className="bg-speech-green rounded-r-[50px] lg:rounded-l-none rounded-l-[50px] p-8 md:p-12 lg:p-15 min-h-[460px] flex flex-col justify-between relative overflow-hidden">
-            {/* Illustration */}
-            <div className="absolute top-8 right-8 lg:top-9 lg:right-12"></div>
-
-            {/* Content */}
-            <div className="relative z-10">
-              <h3 className="font-bricolage text-3xl md:text-4xl lg:text-[44px] font-bold text-white leading-tight tracking-wide max-w-[295px]">
-                Find Support, Guidance, and Balance.
-              </h3>
-            </div>
-
-            {/* CTA Button */}
-            <div className="relative z-10 mt-8">
-              <button className="bg-white hover:bg-white/90 text-speech-green font-bricolage text-lg md:text-xl font-semibold px-10 md:px-12 py-3 md:py-4 rounded-full tracking-wide capitalize transition-colors w-full max-w-[480px]">
-                Find Support Now
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Footer />
     </div>
   );
 }
