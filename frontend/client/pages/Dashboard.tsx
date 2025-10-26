@@ -162,7 +162,7 @@ export default function Dashboard() {
                         {/* Logo */}
                         <div className="mb-6 md:mb-8">
                             <img
-                                src="/Logo.png"
+                                src={greeting.message === 'Good evening' ? "/assets/Logo_White.png" : "/Logo.png"}
                                 alt="Spasht Logo"
                                 className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 mx-auto"
                             />
@@ -170,10 +170,10 @@ export default function Dashboard() {
 
                         {/* Greeting */}
                         <div className="mb-6 md:mb-8">
-                            <h1 className="font-bricolage text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-speech-green mb-3 md:mb-4 leading-tight tracking-wide drop-shadow-sm">
+                            <h1 className={`font-bricolage text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-3 md:mb-4 leading-tight tracking-wide drop-shadow-sm ${greeting.message === 'Good evening' ? 'text-white' : 'text-speech-green'}`}>
                                 {greeting.message}
                             </h1>
-                            <h2 className="font-bricolage text-xl sm:text-2xl md:text-3xl lg:text-4xl font-medium text-speech-green/90 tracking-wide drop-shadow-sm">
+                            <h2 className={`font-bricolage text-xl sm:text-2xl md:text-3xl lg:text-4xl font-medium tracking-wide drop-shadow-sm ${greeting.message === 'Good evening' ? 'text-white' : 'text-speech-green/90'}`}>
                                 {user.displayName || user.email?.split('@')[0]}
                             </h2>
                         </div>
