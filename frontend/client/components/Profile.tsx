@@ -50,7 +50,10 @@ const Profile = () => {
         align="end"
         forceMount
       >
-        <DropdownMenuItem className="cursor-pointer font-bricolage text-speech-green hover:bg-speech-green/10 rounded-xl mx-2 my-1 px-4 py-3">
+        <DropdownMenuItem
+          className="cursor-pointer font-bricolage text-speech-green hover:bg-speech-green/10 rounded-xl mx-2 my-1 px-4 py-3"
+          onClick={() => navigate('/profile')}
+        >
           <User className="mr-3 h-5 w-5" />
           <span className="text-base font-medium">Profile</span>
         </DropdownMenuItem>
