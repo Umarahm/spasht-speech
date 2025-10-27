@@ -21,6 +21,7 @@ import Jams from "./pages/Jams";
 import JAM from "./pages/JAM";
 import SpeechAnalysis from "./pages/SpeechAnalysis";
 import AnalysisDetail from "./pages/AnalysisDetail";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -49,6 +50,7 @@ export const App = () => (
             <Route path="/jam" element={<JAM />} />
             <Route path="/speech-analysis" element={<SpeechAnalysis />} />
             <Route path="/analysis/:sessionId" element={<AnalysisDetail />} />
+            <Route path="/profile" element={<Profile />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

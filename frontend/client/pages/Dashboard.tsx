@@ -152,7 +152,7 @@ export default function Dashboard() {
                         <img
                             src={greeting.image}
                             alt={greeting.message}
-                            className={`w-full h-full object-cover object-center ${backgroundImageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                            className={`w-full h-full object-cover object-center transition-all duration-1000 ease-out ${backgroundImageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'}`}
                             onLoad={() => setBackgroundImageLoaded(true)}
                         />
                     </div>
@@ -169,11 +169,11 @@ export default function Dashboard() {
                         </div>
 
                         {/* Greeting */}
-                        <div className="mb-6 md:mb-8">
-                            <h1 className={`font-bricolage text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-3 md:mb-4 leading-tight tracking-wide drop-shadow-sm ${greeting.message === 'Good evening' ? 'text-white' : 'text-speech-green'}`}>
+                        <div className="mb-6 md:mb-8 animate-fade-in-up">
+                            <h1 className={`font-bricolage text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-3 md:mb-4 leading-tight tracking-wide drop-shadow-sm ${greeting.message === 'Good evening' ? 'text-white' : 'text-speech-green'} animate-slide-in-right`}>
                                 {greeting.message}
                             </h1>
-                            <h2 className={`font-bricolage text-xl sm:text-2xl md:text-3xl lg:text-4xl font-medium tracking-wide drop-shadow-sm ${greeting.message === 'Good evening' ? 'text-white' : 'text-speech-green/90'}`}>
+                            <h2 className={`font-bricolage text-xl sm:text-2xl md:text-3xl lg:text-4xl font-medium tracking-wide drop-shadow-sm ${greeting.message === 'Good evening' ? 'text-white' : 'text-speech-green/90'} animate-slide-in-left`}>
                                 {user.displayName || user.email?.split('@')[0]}
                             </h2>
                         </div>
