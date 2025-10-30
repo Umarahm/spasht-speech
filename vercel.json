@@ -2,5 +2,11 @@
     "version": 2,
     "installCommand": "npm install --no-audit --no-fund && npm --prefix backend install --no-audit --no-fund",
     "buildCommand": "npm run build",
-    "outputDirectory": "backend/dist/spa"
+    "outputDirectory": "backend/dist/spa",
+    "rewrites": [
+        {
+            "source": "/((?!api/).*)",
+            "destination": "/index.html"
+        }
+    ]
 }
