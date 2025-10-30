@@ -1,3 +1,6 @@
 [build]
   command = "npm run build:client"
   publish = "backend/dist/spa"
+
+# Note: SPA routing is handled by the _redirects file in frontend/client/public/
+# This file is automatically copied to the build output during the build process
