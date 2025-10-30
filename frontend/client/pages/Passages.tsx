@@ -415,9 +415,9 @@ export default function Passages() {
                 {/* Banner Image */}
                 <div className="mb-12">
                     <picture>
-                        <source media="(max-width: 768px)" srcSet="/banners/SpeechAnalysisMobile.svg" />
+                        <source media="(max-width: 768px)" srcSet="/banners/SpeechAnalysisMobile.webp" />
                         <img
-                            src="/banners/SpeechAnalysis.svg"
+                            src="/banners/SpeechAnalysis.webp"
                             alt="Speech Analysis Banner"
                             className="w-full h-auto rounded-lg shadow-lg"
                         />

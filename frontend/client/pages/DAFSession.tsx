@@ -12,7 +12,8 @@ export default function DAFSession() {
     const { user } = useAuthContext();
     const navigate = useNavigate();
     const [isRecording, setIsRecording] = useState(false);
-    const [currentPassage, setCurrentPassage] = useState('Loading passage...');
+    const [currentPassage, setCurrentPassage] = useState('Click "New Passage" to generate your reading material.');
+    const [isGeneratingPassage, setIsGeneratingPassage] = useState(false);
     const [headphonesConnected, setHeadphonesConnected] = useState<boolean | null>(null);
     const [showHeadphonesWarning, setShowHeadphonesWarning] = useState(false);
 
@@ -79,6 +80,7 @@ export default function DAFSession() {
 
     // Generate random reading passage
     const generatePassage = async () => {
+        setIsGeneratingPassage(true);
         try {
             const response = await apiFetch('/api/generate-passage', {
                 method: 'POST',
@@ -102,6 +104,8 @@ export default function DAFSession() {
             console.error('Failed to generate passage:', error);
             // Fallback passage
             setCurrentPassage("The quick brown fox jumps over the lazy dog. This pangram contains every letter of the alphabet at least once. Speech therapists often use such sentences to practice articulation and fluency.");
+        } finally {
+            setIsGeneratingPassage(false);
         }
     };
 
@@ -320,7 +324,6 @@ export default function DAFSession() {
     };
 
     useEffect(() => {
-        generatePassage();
         checkHeadphones();
     }, []);
 
@@ -343,9 +346,9 @@ export default function DAFSession() {
                 {/* Banner Image */}
                 <div className="mb-12">
                     <picture>
-                        <source media="(max-width: 768px)" srcSet="/banners/DAFMobile.svg" />
+                        <source media="(max-width: 768px)" srcSet="/banners/DAFMobile.webp" />
                         <img
-                            src="/banners/DAF.svg"
+                            src="/banners/DAF.webp"
                             alt="DAF Session Banner"
                             className="w-full h-auto rounded-lg shadow-lg"
                         />
@@ -423,24 +426,25 @@ export default function DAFSession() {
                                         </CardTitle>
                                         <Button
                                             onClick={generatePassage}
+                                            disabled={isGeneratingPassage}
                                             variant="outline"
-                                            className="font-bricolage border-speech-green text-speech-green hover:bg-speech-green hover:text-white"
+                                            className="font-bricolage border-speech-green text-speech-green hover:bg-speech-green hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
-                                            New Passage
+                                            {isGeneratingPassage ? 'Generating...' : 'New Passage'}
                                         </Button>
                                     </div>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="bg-speech-bg rounded-lg p-6 min-h-[200px] flex flex-col items-center justify-center">
-                                        {currentPassage === 'Loading passage...' ? (
+                                        {isGeneratingPassage ? (
                                             <div className="text-center">
                                                 <div className="loader mx-auto mb-4"></div>
                                                 <p className="font-bricolage text-lg text-speech-green/80">
-                                                    {currentPassage}
+                                                    Generating passage...
                                                 </p>
                                             </div>
                                         ) : (
-                                            <p className="font-bricolage text-lg leading-relaxed text-speech-green/80">
+                                            <p className="font-bricolage text-lg leading-relaxed text-speech-green/80 text-center">
                                                 {currentPassage}
                                             </p>
                                         )}
