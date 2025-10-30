@@ -2,6 +2,8 @@ import { RequestHandler } from "express";
 import { db, storage, firestoreAvailable } from "../firebase.js";
 import { v4 as uuidv4 } from 'uuid';
 import multer from 'multer';
+import path from 'path';
+import { fileURLToPath, pathToFileURL } from 'url';
 import { JamTopic, JamSessionRequest, JamSessionResponse, JamTopicRequest, JamTopicResponse, SpeechAnalysisResult } from '../../shared/api.js';
 
 // Simple audio format validation
@@ -49,26 +51,89 @@ class JamTopicsManager {
 
     private async doLoadTopics(): Promise<void> {
         try {
-            // Try different import paths for the JS file
-            const possibleImportPaths = [
-                '../../../frontend/client/data/jamtopics.js',  // From backend/server/routes
-                '../../frontend/client/data/jamtopics.js'      // Alternative path
+            // Get the current file's directory
+            const __filename = fileURLToPath(import.meta.url);
+            const __dirname = path.dirname(__filename);
+
+            // Try different path strategies for finding jamtopics.js
+            // Strategy 1: Relative to current file (for dev: backend/server/routes -> frontend/client/data)
+            // Strategy 2: Relative to dist/server/routes (for production: dist/server/routes -> frontend/client/data)
+            // Strategy 3: From project root (assuming we're in dist/server/routes or backend/server/routes)
+            const possiblePaths = [
+                // From backend/server/routes -> frontend/client/data/jamtopics.js
+                path.resolve(__dirname, '../../../frontend/client/data/jamtopics.js'),
+                // From dist/server/routes -> frontend/client/data/jamtopics.js (if copied)
+                path.resolve(__dirname, '../../../frontend/client/data/jamtopics.js'),
+                // From dist/server/routes -> dist/server/data/jamtopics.js (if copied during build)
+                path.resolve(__dirname, '../data/jamtopics.js'),
+                // Absolute path from project root (if we can detect it)
+                path.resolve(process.cwd(), 'frontend/client/data/jamtopics.js'),
+                // From dist/server -> project root -> frontend/client/data
+                path.resolve(__dirname, '../../../../frontend/client/data/jamtopics.js'),
             ];
 
             let jamTopics: JamTopic[] | null = null;
+            let loadedPath: string | null = null;
 
-            for (const importPath of possibleImportPaths) {
+            // Try importing from each possible path
+            for (const topicsPath of possiblePaths) {
                 try {
-                    const module = await import(importPath);
+                    // Convert to file:// URL for dynamic import
+                    const fileUrl = pathToFileURL(topicsPath).href;
+                    const module = await import(fileUrl);
                     jamTopics = module.jamTopics || module.default;
+                    loadedPath = topicsPath;
                     break;
-                } catch (importError) {
+                } catch (importError: any) {
                     // Continue to next path
+                    console.log(`  ⚠️  Tried path ${topicsPath}: ${importError.message}`);
                 }
             }
 
             if (!jamTopics) {
-                throw new Error(`JAM topics could not be imported from any of the paths: ${possibleImportPaths.join(', ')}`);
+                // Try using fs.readFileSync as fallback (for cases where dynamic import doesn't work)
+                try {
+                    const fs = await import('fs');
+                    const { createRequire } = await import('module');
+                    const require = createRequire(import.meta.url);
+
+                    for (const topicsPath of possiblePaths) {
+                        try {
+                            if (fs.existsSync(topicsPath)) {
+                                // Try using require as fallback for CommonJS-style files
+                                try {
+                                    const module = require(topicsPath);
+                                    jamTopics = module.jamTopics || module.default;
+                                    if (jamTopics) {
+                                        loadedPath = topicsPath;
+                                        break;
+                                    }
+                                } catch (requireError) {
+                                    // If require fails, try reading and parsing the file
+                                    const content = fs.readFileSync(topicsPath, 'utf-8');
+                                    // For ES module files, we need to extract the export
+                                    const match = content.match(/export\s+(const|let|var)\s+jamTopics\s*=\s*(\[[\s\S]*?\]);/);
+                                    if (match) {
+                                        jamTopics = eval(match[2]);
+                                        if (jamTopics) {
+                                            loadedPath = topicsPath;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (fsError) {
+                            // Continue to next path
+                        }
+                    }
+                } catch (fsImportError) {
+                    // fs not available, continue without fallback
+                    console.log('  ⚠️  File system fallback not available');
+                }
+            }
+
+            if (!jamTopics) {
+                throw new Error(`JAM topics could not be loaded from any of the paths:\n${possiblePaths.map(p => `  - ${p}`).join('\n')}`);
             }
 
             if (!Array.isArray(jamTopics) || jamTopics.length === 0) {
@@ -77,10 +142,12 @@ class JamTopicsManager {
 
             this.topics = jamTopics;
             this.topicsLoaded = true;
-            console.log(`✅ JAM topics loaded: ${this.topics.length} topics`);
+            console.log(`✅ JAM topics loaded: ${this.topics.length} topics from ${loadedPath || 'unknown path'}`);
 
         } catch (error) {
             console.error('❌ Failed to load JAM topics:', (error as Error).message);
+            console.error('Current directory:', process.cwd());
+            console.error('Module URL:', import.meta.url);
             this.topics = [];
             this.topicsLoaded = false;
         }

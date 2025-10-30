@@ -77,7 +77,7 @@ export default function Jams() {
               className="bg-gradient-to-r from-speech-green to-speech-green/90 hover:from-speech-green/90 hover:to-speech-green text-white font-bricolage font-semibold px-12 py-4 text-lg rounded-full tracking-wide transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
             >
               <Timer className="w-6 h-6 mr-3" />
-              Start Your JAM Session
+              Start Your JAM
             </Button>
           </div>
         </div>
