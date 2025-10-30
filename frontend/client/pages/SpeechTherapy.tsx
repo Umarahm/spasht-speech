@@ -649,9 +649,9 @@ export default function SpeechTherapy() {
                 {/* Banner Image */}
                 <div className="mb-12">
                     <picture>
-                        <source media="(max-width: 768px)" srcSet="/banners/SpeechTherapyMobile.svg" />
+                        <source media="(max-width: 768px)" srcSet="/banners/SpeechTherapyMobile.webp" />
                         <img
-                            src="/banners/SpeechTherapy.svg"
+                            src="/banners/SpeechTherapy.webp"
                             alt="Speech Therapy Banner"
                             className="w-full h-auto rounded-lg shadow-lg"
                         />

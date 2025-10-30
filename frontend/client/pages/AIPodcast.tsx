@@ -88,9 +88,9 @@ export default function AIPodcast() {
                 {/* Banner Image */}
                 <div className="mb-12">
                     <picture>
-                        <source media="(max-width: 768px)" srcSet="/banners/AIPodcastMobile.svg" />
+                        <source media="(max-width: 768px)" srcSet="/banners/AIPodcastMobile.webp" />
                         <img
-                            src="/banners/AIPodcast.svg"
+                            src="/banners/AIPodcast.webp"
                             alt="AI Podcast Banner"
                             className="w-full h-auto rounded-lg shadow-lg"
                         />
