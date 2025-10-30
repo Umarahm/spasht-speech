@@ -74,26 +74,28 @@ export default function AIPodcast() {
     const selectedPersonaData = personas.find(p => p.id === selectedPersona);
 
     return (
-        <div className="min-h-screen bg-speech-bg">
+        <div className="min-h-screen bg-gradient-to-br from-speech-bg via-speech-bg to-speech-green/5">
             <Navigation />
 
-            {/* Header Section */}
-            <div className="max-w-7xl mx-auto px-4 py-16 md:px-6 lg:px-8">
-                <div className="text-center mb-16">
-                    <div className="inline-flex items-center gap-3 bg-speech-green/10 border border-speech-green/20 rounded-full px-6 py-2 mb-6">
-                        <MessageSquare className="w-5 h-5 text-speech-green" />
-                        <span className="font-bricolage text-sm font-medium text-speech-green tracking-wide">AI Podcast</span>
-                    </div>
-                    <h1 className="font-bricolage text-4xl md:text-6xl font-bold text-speech-green mb-6">
-                        Voice Conversations
-                    </h1>
-                    <p className="font-bricolage text-xl text-speech-green/80 max-w-2xl mx-auto leading-relaxed">
-                        Engage in real-time voice conversations with specialized AI assistants designed to help you improve your communication skills.
-                    </p>
-                </div>
+            {/* Background decorative elements */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-20 left-10 w-32 h-32 bg-speech-green/5 rounded-full blur-xl"></div>
+                <div className="absolute bottom-20 right-10 w-40 h-40 bg-speech-green/3 rounded-full blur-xl"></div>
+                <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-speech-green/4 rounded-full blur-lg"></div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+            <div className="relative max-w-7xl mx-auto px-4 py-16 md:px-6 lg:px-8 xl:px-12">
+                {/* Banner Image */}
+                <div className="mb-12">
+                    <picture>
+                        <source media="(max-width: 768px)" srcSet="/banners/AIPodcastMobile.svg" />
+                        <img
+                            src="/banners/AIPodcast.svg"
+                            alt="AI Podcast Banner"
+                            className="w-full h-auto rounded-lg shadow-lg"
+                        />
+                    </picture>
+                </div>
                 {/* Persona Selection */}
                 <div className="mb-16">
                     <h2 className="font-bricolage text-3xl md:text-4xl font-bold text-speech-green mb-8 text-center">

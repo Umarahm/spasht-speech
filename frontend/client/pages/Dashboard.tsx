@@ -25,6 +25,8 @@ export default function Dashboard() {
     const [currentQuote, setCurrentQuote] = useState<Quote | null>(null);
     const [backgroundImageLoaded, setBackgroundImageLoaded] = useState(false);
     const [blogImagesLoaded, setBlogImagesLoaded] = useState<Record<number, boolean>>({});
+    const [communicationQuestsLoaded, setCommunicationQuestsLoaded] = useState(false);
+    const [weeklyChallengesLoaded, setWeeklyChallengesLoaded] = useState(false);
     const [jamPassagesModalOpen, setJamPassagesModalOpen] = useState(false);
     const [progressModalOpen, setProgressModalOpen] = useState(false);
     const [settingsModalOpen, setSettingsModalOpen] = useState(false);
@@ -54,7 +56,7 @@ export default function Dashboard() {
         } else if (hour >= 12 && hour < 18) {
             return {
                 message: 'Good afternoon',
-                image: '/assets/homepage/Good Afternoon.svg',
+                image: '/assets/homepage/Good Afternoon.webp',
                 bgColor: 'bg-gradient-to-br from-blue-100 to-cyan-50'
             };
         } else {
@@ -200,6 +202,7 @@ export default function Dashboard() {
                             <div className="relative overflow-visible">
                                 <img
                                     src="/assets/QuotePaper.svg"
+                                    loading="lazy"
                                     alt="Quote Paper"
                                     className="w-full h-auto md:scale-110"
                                 />

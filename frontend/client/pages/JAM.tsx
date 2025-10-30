@@ -539,23 +539,16 @@ export default function JAM() {
             </div>
 
             <div className="relative max-w-7xl mx-auto px-4 py-16 md:px-6 lg:px-8 xl:px-12">
-                {/* Header Section */}
-                <div className="text-center mb-16">
-                    <div className="inline-flex items-center gap-3 bg-gradient-to-r from-speech-green/10 to-speech-green/5 rounded-full px-8 py-3 mb-8 border border-speech-green/20 shadow-lg">
-                        <div className="p-2 bg-speech-green/20 rounded-full">
-                            <Timer className="w-5 h-5 text-speech-green" />
-                        </div>
-                        <span className="font-bricolage text-sm font-semibold text-speech-green tracking-wider uppercase">
-                            Just A Minute
-                        </span>
-                    </div>
-
-                    <h1 className="font-bricolage text-5xl md:text-7xl font-bold bg-gradient-to-r from-speech-green to-speech-green/80 bg-clip-text text-transparent mb-6 tracking-wide">
-                        JAM Sessions
-                    </h1>
-                    <p className="text-lg text-speech-green/70 max-w-2xl mx-auto leading-relaxed">
-                        Speak continuously for exactly one minute on the given topic. Get AI-powered feedback on your fluency and speech patterns.
-                    </p>
+                {/* Banner Image */}
+                <div className="mb-12">
+                    <picture>
+                        <source media="(max-width: 768px)" srcSet="/banners/SpeechAnalysisMobile.svg" />
+                        <img
+                            src="/banners/SpeechAnalysis.svg"
+                            alt="Speech Analysis Banner"
+                            className="w-full h-auto rounded-lg shadow-lg"
+                        />
+                    </picture>
                 </div>
 
                 {/* Controls */}

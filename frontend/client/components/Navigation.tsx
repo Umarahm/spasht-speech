@@ -137,12 +137,6 @@ export default function Navigation({ showDailyStreak = false, dailyStreak = 0, o
                   asChild
                   className="bg-speech-green hover:bg-speech-green/90 text-white font-bricolage text-xl font-semibold px-10 py-6 rounded-full tracking-wide capitalize"
                 >
-                  <Link to="/about">About Us</Link>
-                </Button>
-                <Button
-                  asChild
-                  className="bg-speech-green hover:bg-speech-green/90 text-white font-bricolage text-xl font-semibold px-10 py-6 rounded-full tracking-wide capitalize"
-                >
                   <Link to="/login">Login / SignUp</Link>
                 </Button>
               </>
@@ -285,14 +279,6 @@ export default function Navigation({ showDailyStreak = false, dailyStreak = 0, o
                   </div>
                 ) : (
                   <>
-                    <Button
-                      asChild
-                      className="w-full bg-speech-green hover:bg-speech-green/90 text-white font-bricolage text-lg font-semibold py-4 rounded-full tracking-wide capitalize"
-                    >
-                      <Link to="/about" onClick={() => setIsMobileMenuOpen(false)}>
-                        About Us
-                      </Link>
-                    </Button>
                     <Button
                       asChild
                       className="w-full bg-speech-green hover:bg-speech-green/90 text-white font-bricolage text-lg font-semibold py-4 rounded-full tracking-wide capitalize"
