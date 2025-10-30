@@ -635,41 +635,88 @@ export default function SpeechTherapy() {
     }
 
     return (
-        <div className="min-h-screen bg-speech-bg">
+        <div className="min-h-screen bg-gradient-to-br from-speech-bg via-speech-bg to-speech-green/5">
             <Navigation />
 
-            {/* Hero Background */}
-            <div className="relative min-h-[30vh] flex items-center justify-center overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-speech-green/20 to-speech-bg/80"></div>
-                <div className="relative z-10 text-center px-4 md:px-6 lg:px-8">
-                    <h1 className="font-bricolage text-4xl md:text-5xl lg:text-6xl font-bold text-speech-green mb-4 tracking-wide">
-                        Speech Therapy
-                    </h1>
-                    <p className="font-bricolage text-xl md:text-2xl text-speech-green/80 max-w-3xl mx-auto leading-relaxed tracking-wide">
-                        Practice letter and word repetition with interactive exercises
-                    </p>
-                </div>
+            {/* Background decorative elements */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-20 left-10 w-32 h-32 bg-speech-green/5 rounded-full blur-xl"></div>
+                <div className="absolute bottom-20 right-10 w-40 h-40 bg-speech-green/3 rounded-full blur-xl"></div>
+                <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-speech-green/4 rounded-full blur-lg"></div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-12">
+            <div className="relative max-w-7xl mx-auto px-4 py-16 md:px-6 lg:px-8 xl:px-12">
+                {/* Banner Image */}
+                <div className="mb-12">
+                    <picture>
+                        <source media="(max-width: 768px)" srcSet="/banners/SpeechTherapyMobile.svg" />
+                        <img
+                            src="/banners/SpeechTherapy.svg"
+                            alt="Speech Therapy Banner"
+                            className="w-full h-auto rounded-lg shadow-lg"
+                        />
+                    </picture>
+                </div>
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 mb-8">
-                        <TabsTrigger value="repetition" className="font-bricolage">Letter Repetition</TabsTrigger>
-                        <TabsTrigger value="words" className="font-bricolage">Word Repetition</TabsTrigger>
-                        <TabsTrigger value="english-mcq" className="font-bricolage">English MCQ</TabsTrigger>
-                        <TabsTrigger value="hindi-mcq" className="font-bricolage">Hindi MCQ</TabsTrigger>
-                        <TabsTrigger value="hindi-matras" className="font-bricolage">Hindi Matras</TabsTrigger>
-                    </TabsList>
+                    <div className="mb-8">
+                        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 h-auto p-1">
+                            <TabsTrigger
+                                value="repetition"
+                                className="font-bricolage text-xs sm:text-sm py-3 px-2 data-[state=active]:bg-speech-green data-[state=active]:text-white"
+                            >
+                                <div className="flex flex-col items-center gap-1">
+                                    <span className="block sm:hidden">Letters</span>
+                                    <span className="hidden sm:block">Letter Repetition</span>
+                                </div>
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="words"
+                                className="font-bricolage text-xs sm:text-sm py-3 px-2 data-[state=active]:bg-speech-green data-[state=active]:text-white"
+                            >
+                                <div className="flex flex-col items-center gap-1">
+                                    <span className="block sm:hidden">Words</span>
+                                    <span className="hidden sm:block">Word Repetition</span>
+                                </div>
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="english-mcq"
+                                className="font-bricolage text-xs sm:text-sm py-3 px-2 data-[state=active]:bg-speech-green data-[state=active]:text-white"
+                            >
+                                <div className="flex flex-col items-center gap-1">
+                                    <span className="block sm:hidden">Eng MCQ</span>
+                                    <span className="hidden sm:block">English MCQ</span>
+                                </div>
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="hindi-mcq"
+                                className="font-bricolage text-xs sm:text-sm py-3 px-2 data-[state=active]:bg-speech-green data-[state=active]:text-white"
+                            >
+                                <div className="flex flex-col items-center gap-1">
+                                    <span className="block sm:hidden">Hin MCQ</span>
+                                    <span className="hidden sm:block">Hindi MCQ</span>
+                                </div>
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="hindi-matras"
+                                className="font-bricolage text-xs sm:text-sm py-3 px-2 data-[state=active]:bg-speech-green data-[state=active]:text-white col-span-2 sm:col-span-1"
+                            >
+                                <div className="flex flex-col items-center gap-1">
+                                    <span className="block sm:hidden">Matras</span>
+                                    <span className="hidden sm:block">Hindi Matras</span>
+                                </div>
+                            </TabsTrigger>
+                        </TabsList>
+                    </div>
 
                     {/* Letter Repetition Tab */}
                     <TabsContent value="repetition" className="space-y-6">
                         <Card className="bg-white shadow-lg">
                             <CardHeader>
-                                <CardTitle className="font-bricolage text-2xl text-speech-green flex items-center justify-between">
+                                <CardTitle className="font-bricolage text-xl sm:text-2xl text-speech-green flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                                     <span>Letter Repetition Practice</span>
                                     <div className="flex items-center gap-2">
                                         <Trophy className="w-5 h-5 text-speech-green" />
-                                        <span className="font-semibold">Score: {score}</span>
+                                        <span className="font-semibold text-sm sm:text-base">Score: {score}</span>
                                     </div>
                                 </CardTitle>
                                 <p className="font-bricolage text-lg text-speech-green/70 mt-2">
@@ -678,18 +725,18 @@ export default function SpeechTherapy() {
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="text-center">
-                                    <div className="flex justify-center gap-4 mb-6">
+                                    <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-4 mb-6">
                                         <Button
                                             onClick={() => setCurrentItem(getRandomItem(englishLetters))}
                                             variant={currentItem?.language === 'english' ? 'default' : 'outline'}
-                                            className="font-bricolage"
+                                            className="font-bricolage text-sm sm:text-base"
                                         >
                                             English Letters
                                         </Button>
                                         <Button
                                             onClick={() => setCurrentItem(getRandomItem(hindiLetters))}
                                             variant={currentItem?.language === 'hindi' ? 'default' : 'outline'}
-                                            className="font-bricolage"
+                                            className="font-bricolage text-sm sm:text-base"
                                         >
                                             Hindi Letters
                                         </Button>
@@ -697,35 +744,35 @@ export default function SpeechTherapy() {
 
                                     {currentItem && (
                                         <div className="space-y-6">
-                                            <div className="text-8xl font-bold text-speech-green mb-4">
+                                            <div className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-speech-green mb-4">
                                                 {currentItem.text}
                                             </div>
 
-                                            <div className="flex justify-center gap-4">
+                                            <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-4">
                                                 <Button
                                                     onClick={() => playAudio(currentItem.text, currentItem.language)}
                                                     disabled={isPlaying}
-                                                    className="bg-speech-green hover:bg-speech-green/90 text-white font-bricolage"
+                                                    className="bg-speech-green hover:bg-speech-green/90 text-white font-bricolage text-sm sm:text-base"
                                                 >
-                                                    <Volume2 className="w-5 h-5 mr-2" />
+                                                    <Volume2 className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                                                     {isPlaying ? 'Playing...' : 'Listen'}
                                                 </Button>
 
                                                 <Button
                                                     onClick={isRecording ? stopRecording : startRecording}
-                                                    className={`font-bricolage ${isRecording
+                                                    className={`font-bricolage text-sm sm:text-base ${isRecording
                                                         ? 'bg-red-500 hover:bg-red-600'
                                                         : 'bg-speech-green hover:bg-speech-green/90'
                                                         }`}
                                                 >
                                                     {isRecording ? (
                                                         <>
-                                                            <MicOff className="w-5 h-5 mr-2" />
+                                                            <MicOff className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                                                             Stop Recording
                                                         </>
                                                     ) : (
                                                         <>
-                                                            <Mic className="w-5 h-5 mr-2" />
+                                                            <Mic className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                                                             Repeat
                                                         </>
                                                     )}
@@ -737,7 +784,7 @@ export default function SpeechTherapy() {
                                                         setCurrentItem(getRandomItem(items));
                                                     }}
                                                     variant="outline"
-                                                    className="font-bricolage border-speech-green text-speech-green hover:bg-speech-green hover:text-white"
+                                                    className="font-bricolage border-speech-green text-speech-green hover:bg-speech-green hover:text-white text-sm sm:text-base"
                                                 >
                                                     Next Letter
                                                 </Button>
@@ -781,11 +828,11 @@ export default function SpeechTherapy() {
                     <TabsContent value="words" className="space-y-6">
                         <Card className="bg-white shadow-lg">
                             <CardHeader>
-                                <CardTitle className="font-bricolage text-2xl text-speech-green flex items-center justify-between">
+                                <CardTitle className="font-bricolage text-xl sm:text-2xl text-speech-green flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                                     <span>Word Repetition Practice</span>
                                     <div className="flex items-center gap-2">
                                         <Trophy className="w-5 h-5 text-speech-green" />
-                                        <span className="font-semibold">Score: {score}</span>
+                                        <span className="font-semibold text-sm sm:text-base">Score: {score}</span>
                                     </div>
                                 </CardTitle>
                                 <p className="font-bricolage text-lg text-speech-green/70 mt-2">
@@ -794,18 +841,18 @@ export default function SpeechTherapy() {
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="text-center">
-                                    <div className="flex justify-center gap-4 mb-6">
+                                    <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-4 mb-6">
                                         <Button
                                             onClick={() => setCurrentItem(getRandomItem(englishWords))}
                                             variant={currentItem?.language === 'english' ? 'default' : 'outline'}
-                                            className="font-bricolage"
+                                            className="font-bricolage text-sm sm:text-base"
                                         >
                                             English Words
                                         </Button>
                                         <Button
                                             onClick={() => setCurrentItem(getRandomItem(hindiWords))}
                                             variant={currentItem?.language === 'hindi' ? 'default' : 'outline'}
-                                            className="font-bricolage"
+                                            className="font-bricolage text-sm sm:text-base"
                                         >
                                             Hindi Words
                                         </Button>
@@ -813,35 +860,35 @@ export default function SpeechTherapy() {
 
                                     {currentItem && (
                                         <div className="space-y-6">
-                                            <div className="text-6xl font-bold text-speech-green mb-4">
+                                            <div className="text-4xl sm:text-5xl md:text-6xl font-bold text-speech-green mb-4">
                                                 {currentItem.text}
                                             </div>
 
-                                            <div className="flex justify-center gap-4">
+                                            <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-4">
                                                 <Button
                                                     onClick={() => playAudio(currentItem.text, currentItem.language)}
                                                     disabled={isPlaying}
-                                                    className="bg-speech-green hover:bg-speech-green/90 text-white font-bricolage"
+                                                    className="bg-speech-green hover:bg-speech-green/90 text-white font-bricolage text-sm sm:text-base"
                                                 >
-                                                    <Volume2 className="w-5 h-5 mr-2" />
+                                                    <Volume2 className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                                                     {isPlaying ? 'Playing...' : 'Listen'}
                                                 </Button>
 
                                                 <Button
                                                     onClick={isRecording ? stopRecording : startRecording}
-                                                    className={`font-bricolage ${isRecording
+                                                    className={`font-bricolage text-sm sm:text-base ${isRecording
                                                         ? 'bg-red-500 hover:bg-red-600'
                                                         : 'bg-speech-green hover:bg-speech-green/90'
                                                         }`}
                                                 >
                                                     {isRecording ? (
                                                         <>
-                                                            <MicOff className="w-5 h-5 mr-2" />
+                                                            <MicOff className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                                                             Stop Recording
                                                         </>
                                                     ) : (
                                                         <>
-                                                            <Mic className="w-5 h-5 mr-2" />
+                                                            <Mic className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                                                             Repeat
                                                         </>
                                                     )}
@@ -853,7 +900,7 @@ export default function SpeechTherapy() {
                                                         setCurrentItem(getRandomItem(items));
                                                     }}
                                                     variant="outline"
-                                                    className="font-bricolage border-speech-green text-speech-green hover:bg-speech-green hover:text-white"
+                                                    className="font-bricolage border-speech-green text-speech-green hover:bg-speech-green hover:text-white text-sm sm:text-base"
                                                 >
                                                     Next Word
                                                 </Button>
@@ -897,55 +944,55 @@ export default function SpeechTherapy() {
                     <TabsContent value="english-mcq" className="space-y-6">
                         <Card className="bg-white shadow-lg">
                             <CardHeader>
-                                <CardTitle className="font-bricolage text-2xl text-speech-green flex items-center justify-between">
+                                <CardTitle className="font-bricolage text-xl sm:text-2xl text-speech-green flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                                     <span>English Sound Completion Quiz</span>
                                     <div className="flex items-center gap-2">
                                         <Trophy className="w-5 h-5 text-speech-green" />
-                                        <span className="font-semibold">Score: {score}</span>
+                                        <span className="font-semibold text-sm sm:text-base">Score: {score}</span>
                                     </div>
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="text-center">
-                                    <div className="bg-speech-bg rounded-lg p-6 mb-6">
-                                        <h3 className="font-bricolage text-3xl font-bold text-speech-green mb-4">
+                                    <div className="bg-speech-bg rounded-lg p-4 sm:p-6 mb-6">
+                                        <h3 className="font-bricolage text-xl sm:text-2xl md:text-3xl font-bold text-speech-green mb-4">
                                             Question {currentMCQIndex + 1} of {englishMCQs.length}
                                         </h3>
-                                        <p className="font-bricolage text-xl text-speech-green/80 mb-4">
+                                        <p className="font-bricolage text-lg sm:text-xl text-speech-green/80 mb-4">
                                             {englishMCQs[currentMCQIndex]?.question}
                                         </p>
-                                        <p className="font-bricolage text-lg text-speech-green/60">
+                                        <p className="font-bricolage text-base sm:text-lg text-speech-green/60">
                                             Click on a sound to hear it, then decide if it completes the word correctly.
                                         </p>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4 mb-6">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6">
                                         {englishMCQs[currentMCQIndex]?.options.map((option, index) => (
                                             <Button
                                                 key={index}
                                                 onClick={() => playSoundForMCQ(option, index, 'english')}
                                                 disabled={feedback !== null}
-                                                className="font-bricolage text-lg py-4 h-auto bg-speech-green hover:bg-speech-green/90 text-white flex items-center justify-center gap-2"
+                                                className="font-bricolage text-base sm:text-lg py-3 sm:py-4 h-auto bg-speech-green hover:bg-speech-green/90 text-white flex items-center justify-center gap-2"
                                             >
-                                                <Volume2 className="w-5 h-5" />
+                                                <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />
                                                 Sound {index + 1}
                                             </Button>
                                         ))}
                                     </div>
 
                                     {/* Selection buttons after hearing sounds */}
-                                    <div className="flex justify-center gap-4 mb-6">
+                                    <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-4 mb-6">
                                         <Button
                                             onClick={() => handleMCQAnswer(selectedSoundIndex)}
                                             disabled={feedback !== null || selectedSoundIndex === null}
-                                            className="bg-green-600 hover:bg-green-700 text-white font-bricolage px-8 py-3"
+                                            className="bg-green-600 hover:bg-green-700 text-white font-bricolage px-4 sm:px-8 py-2 sm:py-3 text-sm sm:text-base"
                                         >
                                             This sound completes the word
                                         </Button>
                                         <Button
                                             onClick={() => handleMCQAnswer(null)} // Indicate wrong choice
                                             disabled={feedback !== null || selectedSoundIndex === null}
-                                            className="bg-red-600 hover:bg-red-700 text-white font-bricolage px-8 py-3"
+                                            className="bg-red-600 hover:bg-red-700 text-white font-bricolage px-4 sm:px-8 py-2 sm:py-3 text-sm sm:text-base"
                                         >
                                             This sound doesn't complete the word
                                         </Button>
@@ -977,55 +1024,55 @@ export default function SpeechTherapy() {
                     <TabsContent value="hindi-mcq" className="space-y-6">
                         <Card className="bg-white shadow-lg">
                             <CardHeader>
-                                <CardTitle className="font-bricolage text-2xl text-speech-green flex items-center justify-between">
+                                <CardTitle className="font-bricolage text-xl sm:text-2xl text-speech-green flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                                     <span>Hindi Sound Completion Quiz</span>
                                     <div className="flex items-center gap-2">
                                         <Trophy className="w-5 h-5 text-speech-green" />
-                                        <span className="font-semibold">Score: {score}</span>
+                                        <span className="font-semibold text-sm sm:text-base">Score: {score}</span>
                                     </div>
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="text-center">
-                                    <div className="bg-speech-bg rounded-lg p-6 mb-6">
-                                        <h3 className="font-bricolage text-3xl font-bold text-speech-green mb-4">
+                                    <div className="bg-speech-bg rounded-lg p-4 sm:p-6 mb-6">
+                                        <h3 className="font-bricolage text-xl sm:text-2xl md:text-3xl font-bold text-speech-green mb-4">
                                             प्रश्न {currentMCQIndex + 1} का {hindiMCQs.length}
                                         </h3>
-                                        <p className="font-bricolage text-xl text-speech-green/80 mb-4">
+                                        <p className="font-bricolage text-lg sm:text-xl text-speech-green/80 mb-4">
                                             {hindiMCQs[currentMCQIndex]?.question}
                                         </p>
-                                        <p className="font-bricolage text-lg text-speech-green/60">
+                                        <p className="font-bricolage text-base sm:text-lg text-speech-green/60">
                                             ध्वनि सुनने के लिए क्लिक करें, फिर तय करें कि यह शब्द को सही ढंग से पूरा करती है या नहीं।
                                         </p>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4 mb-6">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6">
                                         {hindiMCQs[currentMCQIndex]?.options.map((option, index) => (
                                             <Button
                                                 key={index}
                                                 onClick={() => playSoundForMCQ(option, index, 'hindi')}
                                                 disabled={feedback !== null}
-                                                className="font-bricolage text-lg py-4 h-auto bg-speech-green hover:bg-speech-green/90 text-white flex items-center justify-center gap-2"
+                                                className="font-bricolage text-base sm:text-lg py-3 sm:py-4 h-auto bg-speech-green hover:bg-speech-green/90 text-white flex items-center justify-center gap-2"
                                             >
-                                                <Volume2 className="w-5 h-5" />
+                                                <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />
                                                 ध्वनि {index + 1}
                                             </Button>
                                         ))}
                                     </div>
 
                                     {/* Selection buttons after hearing sounds */}
-                                    <div className="flex justify-center gap-4 mb-6">
+                                    <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-4 mb-6">
                                         <Button
                                             onClick={() => handleMCQAnswer(selectedSoundIndex)}
                                             disabled={feedback !== null || selectedSoundIndex === null}
-                                            className="bg-green-600 hover:bg-green-700 text-white font-bricolage px-8 py-3"
+                                            className="bg-green-600 hover:bg-green-700 text-white font-bricolage px-4 sm:px-8 py-2 sm:py-3 text-sm sm:text-base"
                                         >
                                             यह ध्वनि शब्द को पूरा करती है
                                         </Button>
                                         <Button
                                             onClick={() => handleMCQAnswer(null)} // Indicate wrong choice
                                             disabled={feedback !== null || selectedSoundIndex === null}
-                                            className="bg-red-600 hover:bg-red-700 text-white font-bricolage px-8 py-3"
+                                            className="bg-red-600 hover:bg-red-700 text-white font-bricolage px-4 sm:px-8 py-2 sm:py-3 text-sm sm:text-base"
                                         >
                                             यह ध्वनि शब्द को पूरा नहीं करती
                                         </Button>
