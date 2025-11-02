@@ -320,7 +320,7 @@ export default function JAM() {
 
             console.log('🎵 Using audio format:', selectedMimeType);
 
-            const mediaRecorder = new MediaRecorder(stream, {
+            const mediaRecorder = new MediaRecorder(result.stream, {
                 mimeType: selectedMimeType
             });
 
