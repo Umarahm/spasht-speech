@@ -5,7 +5,18 @@ import { createServer as createHttpServer } from "http";
 import multer from "multer";
 
 // Load environment variables FIRST
-dotenv.config();
+// Load from backend directory (go up one level from server directory)
+import { resolve } from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const envPath = resolve(__dirname, '../.env');
+
+dotenv.config({ path: envPath });
+console.log('🔍 Environment check - GEMINI_RECOMMENDATION_API_KEY:', process.env.GEMINI_RECOMMENDATION_API_KEY ? 'SET' : 'NOT SET');
+console.log('📁 Loading .env from:', envPath);
 
 // Initialize Firebase (import after dotenv.config)
 import { db, storage, firestoreAvailable } from "./firebase.js";
@@ -39,6 +50,7 @@ import {
 } from "./routes/jams.js";
 // Speech Analysis API
 import { SpeechAnalysisResponse, AnalysisSegment, AnalysisSummary } from '../shared/api.js';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // Configure multer for memory storage
 const upload = multer({
@@ -171,6 +183,173 @@ const uploadRecording = [
   }
 ];
 
+
+/**
+ * Get a single analysis by sessionId
+ */
+const getSingleAnalysis = async (req: any, res: any) => {
+  try {
+    const { userId, sessionId } = req.params;
+    console.log('getSingleAnalysis called for userId:', userId, 'sessionId:', sessionId);
+
+    if (!userId || !sessionId) {
+      return res.status(400).json({
+        error: 'Missing required fields',
+        message: 'userId and sessionId are required'
+      });
+    }
+
+    // Load specific analysis from Firebase Storage
+    const analysisFileName = `recordings/${userId}/${sessionId}.json`;
+    const analysisFile = storage.file(analysisFileName);
+
+    let analysis: any;
+    try {
+      const [exists] = await analysisFile.exists();
+      if (!exists) {
+        return res.status(404).json({
+          error: 'Analysis not found',
+          message: 'Analysis results not found for this session.'
+        });
+      }
+
+      const [content] = await analysisFile.download();
+      analysis = JSON.parse(content.toString());
+      console.log('✅ Analysis loaded from Firebase Storage');
+    } catch (error) {
+      console.error('❌ Failed to load analysis:', error);
+      return res.status(404).json({
+        error: 'Analysis not found',
+        message: 'Analysis results not found for this session.'
+      });
+    }
+
+    // Generate Firebase Storage URL for the audio file
+    let audioUrl = null;
+    try {
+      const audioFileName = `recordings/${userId}/${sessionId}.wav`;
+      const audioFile = storage.file(audioFileName);
+
+      const [exists] = await audioFile.exists();
+      if (exists) {
+        const [signedUrl] = await audioFile.getSignedUrl({
+          action: 'read',
+          expires: Date.now() + 365 * 24 * 60 * 60 * 1000, // 1 year
+        });
+        audioUrl = signedUrl;
+      }
+    } catch (error) {
+      console.warn(`Could not generate audio URL for session ${sessionId}:`, error);
+    }
+
+    // Get session data if available
+    let sessionData = null;
+    if (db && firestoreAvailable) {
+      try {
+        const sessionRef = db.collection('recording_sessions').doc(sessionId);
+        const sessionDoc = await sessionRef.get();
+        if (sessionDoc.exists) {
+          sessionData = sessionDoc.data();
+        }
+      } catch (sessionError) {
+        console.warn('Could not fetch session data:', sessionError);
+      }
+    }
+
+    const enrichedAnalysis = {
+      ...analysis,
+      audioUrl,
+      recordingDuration: sessionData?.duration || null,
+      sessionData: sessionData || null
+    };
+
+    res.status(200).json({
+      success: true,
+      analysis: enrichedAnalysis
+    });
+  } catch (error) {
+    console.error('Error fetching single analysis:', error);
+    res.status(500).json({
+      error: 'Failed to fetch analysis',
+      message: 'An error occurred while fetching the analysis result.'
+    });
+  }
+};
+
+/**
+ * Get all audio files for pagination (without analysis data)
+ */
+const getAllAudioFiles = async (req: any, res: any) => {
+  try {
+    const { userId } = req.params;
+    console.log('getAllAudioFiles called for userId:', userId);
+
+    if (!userId) {
+      return res.status(400).json({
+        error: 'Missing user ID',
+        message: 'userId is required'
+      });
+    }
+
+    // Get all audio files from Firebase Storage
+    const [files] = await storage.getFiles({
+      prefix: `recordings/${userId}/`,
+    });
+
+    // Filter to only audio files (.wav)
+    const audioFiles = files.filter(file => file.name.endsWith('.wav'));
+
+    console.log(`Found ${audioFiles.length} audio files for user ${userId}`);
+
+    // Process audio files to get basic info
+    const allRecordings = await Promise.all(audioFiles.map(async (file) => {
+      try {
+        const [signedUrl] = await file.getSignedUrl({
+          action: 'read',
+          expires: Date.now() + 365 * 24 * 60 * 60 * 1000, // 1 year
+        });
+
+        // Extract sessionId from filename (remove .wav extension)
+        const fileName = file.name.split('/').pop() || '';
+        const sessionId = fileName.replace('.wav', '');
+
+        // Get metadata
+        const [metadata] = await file.getMetadata();
+        const uploadedAt = metadata.timeCreated || metadata.updated;
+
+        return {
+          sessionId,
+          fileName,
+          audioUrl: signedUrl,
+          uploadedAt,
+          size: metadata.size
+        };
+      } catch (error) {
+        console.warn(`Could not process file ${file.name}:`, error);
+        return null;
+      }
+    })).then(results => results.filter(Boolean));
+
+    // Sort by upload date (most recent first)
+    allRecordings.sort((a, b) => {
+      const dateA = new Date(a.uploadedAt).getTime();
+      const dateB = new Date(b.uploadedAt).getTime();
+      return dateB - dateA;
+    });
+
+    res.status(200).json({
+      success: true,
+      audioFiles: allRecordings,
+      total: allRecordings.length
+    });
+  } catch (error) {
+    console.error('Error fetching audio files:', error);
+    res.status(500).json({
+      error: 'Failed to fetch audio files',
+      message: 'An error occurred while fetching audio files.'
+    });
+  }
+};
 
 const getUserAnalysis = async (req: any, res: any) => {
   try {
@@ -337,6 +516,365 @@ const getUserAnalysis = async (req: any, res: any) => {
       error: 'Failed to fetch analysis',
       message: 'An error occurred while fetching user analysis results.'
     });
+  }
+};
+
+/**
+ * Check if recommendations exist for a session
+ */
+const checkRecommendations = async (req: any, res: any) => {
+  try {
+    const { sessionId, userId } = req.params;
+
+    if (!sessionId || !userId) {
+      return res.status(400).json({
+        error: 'Missing required fields',
+        message: 'sessionId and userId are required'
+      });
+    }
+
+    const recommendationFileName = `recordings/${userId}/${sessionId}.md`;
+    const recommendationFile = storage.file(recommendationFileName);
+
+    const [exists] = await recommendationFile.exists();
+
+    if (exists) {
+      const [recommendationUrl] = await recommendationFile.getSignedUrl({
+        action: 'read',
+        expires: Date.now() + 365 * 24 * 60 * 60 * 1000, // 1 year
+      });
+
+      res.json({
+        exists: true,
+        recommendationUrl
+      });
+    } else {
+      res.json({
+        exists: false
+      });
+    }
+  } catch (error: any) {
+    console.error('❌ Error checking recommendations:', error);
+    res.status(500).json({
+      error: 'Failed to check recommendations',
+      message: error.message || 'An error occurred while checking recommendations.'
+    });
+  }
+};
+
+/**
+ * Fetch existing recommendations for a session
+ */
+const fetchRecommendations = async (req: any, res: any) => {
+  try {
+    const { sessionId, userId } = req.params;
+
+    if (!sessionId || !userId) {
+      return res.status(400).json({
+        error: 'Missing required fields',
+        message: 'sessionId and userId are required'
+      });
+    }
+
+    const recommendationFileName = `recordings/${userId}/${sessionId}.md`;
+    const recommendationFile = storage.file(recommendationFileName);
+
+    const [exists] = await recommendationFile.exists();
+
+    if (!exists) {
+      return res.status(404).json({
+        error: 'Recommendations not found',
+        message: 'No recommendations found for this session.'
+      });
+    }
+
+    const [content] = await recommendationFile.download();
+    const recommendations = content.toString();
+
+    const [recommendationUrl] = await recommendationFile.getSignedUrl({
+      action: 'read',
+      expires: Date.now() + 365 * 24 * 60 * 60 * 1000, // 1 year
+    });
+
+    res.json({
+      success: true,
+      recommendations,
+      recommendationUrl
+    });
+  } catch (error: any) {
+    console.error('❌ Error fetching recommendations:', error);
+    res.status(500).json({
+      error: 'Failed to fetch recommendations',
+      message: error.message || 'An error occurred while fetching recommendations.'
+    });
+  }
+};
+
+/**
+ * Get recommendations for a session
+ */
+const getRecommendations = async (req: any, res: any) => {
+  try {
+    const { sessionId, userId, userEmail } = req.body;
+
+    if (!sessionId || !userId) {
+      return res.status(400).json({
+        error: 'Missing required fields',
+        message: 'sessionId and userId are required'
+      });
+    }
+
+    console.log('🎯 Generating personalized recommendations for session:', sessionId, 'user:', userId);
+
+    // Rate limiting: Check if user is tester (unlimited) or regular user (max 3)
+    const TESTER_EMAIL = 'umarahmed1730300@gmail.com';
+    const MAX_RECOMMENDATIONS = 3;
+
+    if (userEmail !== TESTER_EMAIL && db && firestoreAvailable) {
+      try {
+        const usageRef = db.collection('recommendation_usage').doc(userId);
+        const usageDoc = await usageRef.get();
+
+        let usageCount = 0;
+        if (usageDoc.exists) {
+          const usageData = usageDoc.data();
+          usageCount = usageData?.count || 0;
+        }
+
+        if (usageCount >= MAX_RECOMMENDATIONS) {
+          return res.status(429).json({
+            error: 'Rate limit exceeded',
+            message: `You have reached the maximum limit of ${MAX_RECOMMENDATIONS} personalized recommendations. Please upgrade for unlimited access.`,
+            remaining: 0
+          });
+        }
+      } catch (rateLimitError) {
+        console.warn('⚠️ Could not check rate limit, allowing request:', rateLimitError);
+      }
+    }
+
+    // Load analysis from Firebase Storage
+    const analysisFileName = `recordings/${userId}/${sessionId}.json`;
+    const analysisFile = storage.file(analysisFileName);
+
+    let analysis: any;
+    try {
+      const [content] = await analysisFile.download();
+      analysis = JSON.parse(content.toString());
+      console.log('✅ Analysis loaded from Firebase Storage');
+    } catch (error) {
+      console.error('❌ Failed to load analysis:', error);
+      return res.status(404).json({
+        error: 'Analysis not found',
+        message: 'Analysis results not found. Please analyze the recording first.'
+      });
+    }
+
+    // Generate recommendations using Gemini API
+    let recommendationsMarkdown: string;
+    try {
+      recommendationsMarkdown = await generateRecommendations(analysis, sessionId);
+    } catch (error: any) {
+      console.error('❌ Error in generateRecommendations:', error);
+      return res.status(500).json({
+        error: 'Failed to generate recommendations',
+        message: error.message || 'Could not generate recommendations. Please try again later.'
+      });
+    }
+
+    if (!recommendationsMarkdown || recommendationsMarkdown.trim().length === 0) {
+      return res.status(500).json({
+        error: 'Failed to generate recommendations',
+        message: 'Recommendations API returned empty response. Please try again later.'
+      });
+    }
+
+    // Save recommendations to Firebase Storage as markdown file
+    const recommendationFileName = `recordings/${userId}/${sessionId}.md`;
+    const recommendationFile = storage.file(recommendationFileName);
+
+    await recommendationFile.save(recommendationsMarkdown, {
+      metadata: {
+        contentType: 'text/markdown',
+        metadata: {
+          userId,
+          sessionId,
+          analyzedAt: analysis.analyzedAt || new Date().toISOString(),
+          type: 'recommendations'
+        }
+      }
+    });
+
+    console.log('✅ Recommendations saved to Firebase Storage:', recommendationFileName);
+
+    // Update usage count (only for non-testers)
+    if (userEmail !== TESTER_EMAIL && db && firestoreAvailable) {
+      try {
+        const usageRef = db.collection('recommendation_usage').doc(userId);
+        const usageDoc = await usageRef.get();
+
+        if (usageDoc.exists) {
+          await usageRef.update({
+            count: (usageDoc.data()?.count || 0) + 1,
+            lastUsed: new Date().toISOString()
+          });
+        } else {
+          await usageRef.set({
+            userId,
+            count: 1,
+            lastUsed: new Date().toISOString(),
+            createdAt: new Date().toISOString()
+          });
+        }
+      } catch (usageError) {
+        console.warn('⚠️ Could not update usage count:', usageError);
+      }
+    }
+
+    // Get the recommendation file URL
+    const [recommendationUrl] = await recommendationFile.getSignedUrl({
+      action: 'read',
+      expires: Date.now() + 365 * 24 * 60 * 60 * 1000, // 1 year
+    });
+
+    // Get remaining count
+    let remaining = MAX_RECOMMENDATIONS;
+    if (userEmail !== TESTER_EMAIL && db && firestoreAvailable) {
+      try {
+        const usageRef = db.collection('recommendation_usage').doc(userId);
+        const usageDoc = await usageRef.get();
+        if (usageDoc.exists) {
+          const currentCount = usageDoc.data()?.count || 0;
+          remaining = Math.max(0, MAX_RECOMMENDATIONS - currentCount);
+        }
+      } catch (error) {
+        // Ignore error
+      }
+    } else if (userEmail === TESTER_EMAIL) {
+      remaining = -1; // Unlimited
+    }
+
+    res.json({
+      success: true,
+      recommendationUrl,
+      recommendations: recommendationsMarkdown,
+      remaining
+    });
+
+  } catch (error: any) {
+    console.error('❌ Error getting recommendations:', error);
+    res.status(500).json({
+      error: 'Failed to get recommendations',
+      message: error.message || 'An error occurred while generating recommendations.'
+    });
+  }
+};
+
+/**
+ * Generate personalized recommendations using Gemini API
+ */
+const generateRecommendations = async (analysis: any, sessionId: string): Promise<string> => {
+  try {
+    // Use the same API key as passages (GEMINI_API_KEY) for testing
+    const apiKey = process.env.GEMINI_API_KEY || process.env.GEMINI_RECOMMENDATION_API_KEY;
+
+    if (!apiKey) {
+      console.warn('⚠️ GEMINI_API_KEY not configured, skipping recommendations');
+      throw new Error('GEMINI_API_KEY not configured');
+    }
+
+    console.log('🤖 Generating recommendations with Gemini API...');
+    console.log('🔑 API Key configured:', apiKey ? `${apiKey.substring(0, 10)}...` : 'NOT SET');
+
+    // Initialize Gemini - use the same model as passages (gemini-2.5-flash-lite)
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-lite' });
+
+    console.log('✅ Gemini model initialized');
+
+    // Prepare analytics data for the prompt
+    const analyticsData = {
+      summary: analysis.summary,
+      segments: analysis.segments?.slice(0, 10), // Limit segments for prompt size
+      sessionId: analysis.sessionId,
+      analyzedAt: analysis.analyzedAt
+    };
+
+    const prompt = `You are a speech therapy expert. Based on the following speech analysis analytics, provide personalized recommendations for the user.
+
+Analytics Data:
+${JSON.stringify(analyticsData, null, 2)}
+
+Please provide:
+1. **Exercises**: Specific exercises to help improve speech patterns based on the analysis
+2. **Recommendations**: Practical recommendations for daily practice
+3. **Real-life Examples**: Examples of how to apply these exercises in real situations
+4. **How to Deal**: Strategies for dealing with identified speech patterns
+5. **Conclusion**: End your response with "SPASHT 2025"
+
+Format your response in markdown format with clear sections and headings.`;
+
+    console.log('📤 Sending prompt to Gemini API...');
+    console.log('📝 Prompt length:', prompt.length, 'characters');
+
+    try {
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+
+      console.log('📥 Received response from Gemini API');
+      console.log('📊 Response structure:', {
+        hasText: typeof response.text === 'function',
+        hasCandidates: !!response.candidates,
+        candidatesLength: response.candidates?.length || 0
+      });
+
+      // Handle different response formats
+      let recommendations: string;
+      if (typeof response.text === 'function') {
+        recommendations = response.text();
+        console.log('✅ Using response.text() method');
+      } else if (response.candidates && response.candidates.length > 0) {
+        const candidate = response.candidates[0];
+        recommendations = candidate.content?.parts?.[0]?.text || '';
+        console.log('✅ Using candidates[0].content.parts[0].text');
+      } else {
+        console.warn('⚠️ Unexpected response format:', JSON.stringify(response).substring(0, 200));
+        recommendations = JSON.stringify(response);
+      }
+
+      if (!recommendations || recommendations.trim().length === 0) {
+        console.error('❌ Empty recommendations received');
+        console.error('Full response:', JSON.stringify(response, null, 2));
+        throw new Error('Gemini API returned empty response. Please check API key and model availability.');
+      }
+
+      console.log('✅ Recommendations generated successfully');
+      console.log('📏 Recommendations length:', recommendations.length, 'characters');
+      console.log('📄 First 200 chars:', recommendations.substring(0, 200));
+      return recommendations;
+    } catch (apiError: any) {
+      console.error('❌ Gemini API call failed:', apiError);
+      console.error('API Error details:', {
+        message: apiError.message,
+        code: apiError.code,
+        status: apiError.status,
+        statusCode: apiError.statusCode,
+        stack: apiError.stack?.substring(0, 500)
+      });
+      throw new Error(`Gemini API error: ${apiError.message || 'Unknown error'}`);
+    }
+
+  } catch (error: any) {
+    console.error('❌ Error generating recommendations:', error);
+    console.error('Error details:', {
+      message: error.message,
+      code: error.code,
+      statusCode: error.statusCode,
+      status: error.status,
+      stack: error.stack
+    });
+    // Throw error instead of returning empty string so we can see what went wrong
+    throw new Error(`Failed to generate recommendations: ${error.message || 'Unknown error'}`);
   }
 };
 
@@ -641,7 +1179,12 @@ app.get("/api/progress", handleProgressAnalytics);
 app.post("/api/recording-sessions", createRecordingSession);
 app.post("/api/recordings/upload", uploadRecording);
 app.post("/api/recordings/analyze-new", analyzeSpeechRecording);
+app.post("/api/recordings/get-recommendations", getRecommendations);
 app.get("/api/users/:userId/analysis", getUserAnalysis);
+app.get("/api/users/:userId/analysis/:sessionId", getSingleAnalysis);
+app.get("/api/users/:userId/audio-files", getAllAudioFiles);
+app.get("/api/users/:userId/recommendations/:sessionId", fetchRecommendations);
+app.get("/api/users/:userId/recommendations/:sessionId/check", checkRecommendations);
 app.get("/api/debug/firebase", debugFirebase);
 
 // JAM (JustAMinute) endpoints

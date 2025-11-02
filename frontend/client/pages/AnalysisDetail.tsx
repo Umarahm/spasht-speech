@@ -5,10 +5,18 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuthContext } from '../components/auth/AuthProvider';
-import { TrendingUp, BarChart3, Activity, Mic, Clock, Target, Play, Pause, Volume2, Calendar, ArrowLeft, Zap, Clock as ClockIcon } from "lucide-react";
+import { TrendingUp, BarChart3, Activity, Clock, Target, Play, Pause, Volume2, Calendar, ArrowLeft, Zap, Clock as ClockIcon, Sparkles, Loader2 } from "lucide-react";
 import { SpeechAnalysisResult } from '../../../backend/shared/api';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import { apiFetch } from '@/lib/api';
+import MarkdownRenderer from '../components/MarkdownRenderer';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import { useToast } from '@/hooks/use-toast';
 
 export default function AnalysisDetail() {
     const { sessionId } = useParams<{ sessionId: string }>();
@@ -22,6 +30,11 @@ export default function AnalysisDetail() {
     const [waveformData, setWaveformData] = useState<number[]>([]);
     const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
     const audioRef = useRef<HTMLAudioElement>(null);
+    const [hasExistingRecommendations, setHasExistingRecommendations] = useState(false);
+    const [showRecommendationsModal, setShowRecommendationsModal] = useState(false);
+    const [existingRecommendations, setExistingRecommendations] = useState<string | null>(null);
+    const [loadingExistingRecommendations, setLoadingExistingRecommendations] = useState(false);
+    const { toast } = useToast();
 
     useEffect(() => {
         if (!user) {
@@ -56,16 +69,17 @@ export default function AnalysisDetail() {
         if (!user || !sessionId) return;
 
         try {
-            const response = await apiFetch(`/api/users/${user.uid}/analysis`);
+            // Fetch only the specific analysis
+            const response = await apiFetch(`/api/users/${user.uid}/analysis/${sessionId}`);
             if (!response.ok) {
-                throw new Error(`Failed to fetch analyses: ${response.status}`);
+                throw new Error(`Failed to fetch analysis: ${response.status}`);
             }
 
             const data = await response.json();
-            const foundAnalysis = data.analyses?.find((a: SpeechAnalysisResult) => a.sessionId === sessionId);
-
-            if (foundAnalysis) {
-                setAnalysis(foundAnalysis);
+            if (data.analysis) {
+                setAnalysis(data.analysis);
+                // Check for existing recommendations
+                checkExistingRecommendations();
             } else {
                 console.warn('Analysis not found for sessionId:', sessionId);
             }
@@ -73,6 +87,47 @@ export default function AnalysisDetail() {
             console.error('Error fetching analysis detail:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    // Check if recommendations exist for this session
+    const checkExistingRecommendations = async () => {
+        if (!sessionId || !user) return;
+
+        try {
+            const response = await apiFetch(`/api/users/${user.uid}/recommendations/${sessionId}/check`);
+            if (response.ok) {
+                const data = await response.json();
+                setHasExistingRecommendations(data.exists || false);
+            }
+        } catch (error) {
+            console.error('Error checking recommendations:', error);
+        }
+    };
+
+    // Fetch existing recommendations
+    const fetchExistingRecommendations = async () => {
+        if (!sessionId || !user) return;
+
+        setLoadingExistingRecommendations(true);
+        try {
+            const response = await apiFetch(`/api/users/${user.uid}/recommendations/${sessionId}`);
+            if (response.ok) {
+                const data = await response.json();
+                setExistingRecommendations(data.recommendations);
+                setShowRecommendationsModal(true);
+            } else {
+                throw new Error('Failed to fetch recommendations');
+            }
+        } catch (error) {
+            console.error('Error fetching recommendations:', error);
+            toast({
+                variant: "destructive",
+                title: "Failed to Load Recommendations",
+                description: "Could not load recommendations. Please try again.",
+            });
+        } finally {
+            setLoadingExistingRecommendations(false);
         }
     };
 
@@ -764,7 +819,34 @@ export default function AnalysisDetail() {
                         </CardContent>
                     </Card>
                 </div>
+
             </div>
+
+            {/* Recommendations Button - Positioned after all analysis content */}
+            {hasExistingRecommendations && (
+                <div className="max-w-7xl mx-auto px-4 py-8 md:px-6 lg:px-8">
+                    <div className="flex justify-center mb-8">
+                        <Button
+                            onClick={fetchExistingRecommendations}
+                            disabled={loadingExistingRecommendations}
+                            variant="outline"
+                            className="font-bricolage border-2 border-speech-green text-speech-green hover:bg-speech-green hover:text-white px-8 py-6 text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                        >
+                            {loadingExistingRecommendations ? (
+                                <>
+                                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                                    Loading...
+                                </>
+                            ) : (
+                                <>
+                                    <Sparkles className="w-5 h-5 mr-2" />
+                                    View Recommendations
+                                </>
+                            )}
+                        </Button>
+                    </div>
+                </div>
+            )}
 
             {/* Hidden audio element */}
             <audio
@@ -777,6 +859,26 @@ export default function AnalysisDetail() {
                 onPlay={() => setPlayingAudio(true)}
                 preload="metadata"
             />
+
+            {/* Recommendations Modal */}
+            <Dialog open={showRecommendationsModal} onOpenChange={setShowRecommendationsModal}>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle className="font-bricolage text-2xl text-speech-green flex items-center gap-2">
+                            <Sparkles className="w-6 h-6" />
+                            Personalized Recommendations
+                        </DialogTitle>
+                    </DialogHeader>
+                    {existingRecommendations && (
+                        <div className="mt-4">
+                            <MarkdownRenderer 
+                                content={existingRecommendations}
+                                className="font-bricolage"
+                            />
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
 
             <Footer />
         </div>

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useAuthContext } from '../components/auth/AuthProvider';
-import { TrendingUp, BarChart3, Activity, Mic, Clock, Target, Play, Pause, Volume2, Calendar, ArrowUp, ArrowDown, TrendingDown, Zap, ChevronLeft, ChevronRight } from "lucide-react";
+import { TrendingUp, BarChart3, Activity, Mic, Clock, Target, Play, Pause, Volume2, Calendar, ArrowUp, ArrowDown, TrendingDown, Zap, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { SpeechAnalysisResult } from '../../../backend/shared/api';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import { apiFetch } from '@/lib/api';
@@ -42,6 +42,12 @@ export default function SpeechAnalysis() {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
     const audioRef = useRef<HTMLAudioElement>(null);
+    
+    // New state for paginated audio files
+    const [allAudioFiles, setAllAudioFiles] = useState<any[]>([]);
+    const [analysesData, setAnalysesData] = useState<{ [sessionId: string]: SpeechAnalysisResult }>({});
+    const [loadingAnalyses, setLoadingAnalyses] = useState(false);
+    const maxAnalysisDisplay = 10;
 
     useEffect(() => {
         // Redirect to login if not authenticated
@@ -56,6 +62,7 @@ export default function SpeechAnalysis() {
 
     useEffect(() => {
         fetchUserAnalyses();
+        fetchAllAudioFiles();
     }, [user]);
 
     const fetchUserAnalyses = async () => {
@@ -79,6 +86,59 @@ export default function SpeechAnalysis() {
             setAnalyses([]);
         } finally {
             setLoading(false);
+        }
+    };
+
+    // Fetch all audio files for pagination
+    const fetchAllAudioFiles = async () => {
+        if (!user) return;
+
+        try {
+            const response = await apiFetch(`/api/users/${user.uid}/audio-files`);
+            if (response.ok) {
+                const data = await response.json();
+                setAllAudioFiles(data.audioFiles || []);
+                
+                // Load analyses for first 10 audio files only
+                const audioFilesToAnalyze = data.audioFiles.slice(0, maxAnalysisDisplay);
+                await loadAnalysesForFiles(audioFilesToAnalyze);
+            }
+        } catch (error) {
+            console.error('Error fetching audio files:', error);
+        }
+    };
+
+    // Load analyses for specific audio files
+    const loadAnalysesForFiles = async (audioFiles: any[]) => {
+        setLoadingAnalyses(true);
+        try {
+            const analysisPromises = audioFiles.map(async (file) => {
+                try {
+                    const response = await apiFetch(`/api/users/${user!.uid}/analysis/${file.sessionId}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        return { sessionId: file.sessionId, analysis: data.analysis };
+                    }
+                } catch (error) {
+                    // Analysis might not exist for this file, that's ok
+                }
+                return null;
+            });
+
+            const results = await Promise.all(analysisPromises);
+            const analysesMap: { [sessionId: string]: SpeechAnalysisResult } = {};
+            
+            results.forEach(result => {
+                if (result && result.analysis) {
+                    analysesMap[result.sessionId] = result.analysis;
+                }
+            });
+
+            setAnalysesData(analysesMap);
+        } catch (error) {
+            console.error('Error loading analyses:', error);
+        } finally {
+            setLoadingAnalyses(false);
         }
     };
 
@@ -138,6 +198,23 @@ export default function SpeechAnalysis() {
             hour: '2-digit',
             minute: '2-digit'
         });
+    };
+
+    const formatSessionDisplayName = (sessionId: string, uploadedAt: string) => {
+        // Determine session type
+        const sessionType = sessionId.startsWith('jam') ? 'Jam' : 
+            sessionId.startsWith('session') ? 'Passage' : 'Unknown';
+        
+        // Format date as "Nov 2nd"
+        const date = new Date(uploadedAt);
+        const day = date.getDate();
+        const daySuffix = day === 1 || day === 21 || day === 31 ? 'st' :
+                         day === 2 || day === 22 ? 'nd' :
+                         day === 3 || day === 23 ? 'rd' : 'th';
+        
+        const month = date.toLocaleDateString('en-US', { month: 'short' });
+        
+        return `${sessionType} session on ${month} ${day}${daySuffix}`;
     };
 
     // Data analysis functions
@@ -909,193 +986,190 @@ export default function SpeechAnalysis() {
                             </Card>
                         </div>
 
-                        {/* Detailed Analysis History */}
-                        <div className="space-y-6">
-                            <div className="flex items-center justify-between">
-                                <h2 className="font-bricolage text-3xl font-bold text-speech-green tracking-wide">
-                                    Analysis History
-                                </h2>
-                                <div className="text-sm text-speech-green/70">
-                                    {analyses.length} total sessions
-                                </div>
-                            </div>
-
-                            {analyses.slice().reverse().slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((analysis, index) => {
-                                const sessionType = analysis.sessionId.startsWith('jam') ? 'JAM' :
-                                    analysis.sessionId.startsWith('session') ? 'Passage' : 'Unknown';
-                                const actualIndex = (currentPage - 1) * itemsPerPage + index;
-                                return (
-                                    <Card
-                                        key={analysis.sessionId}
-                                        className="hover:shadow-lg transition-all duration-200 cursor-pointer group"
-                                        onClick={() => navigate(`/analysis/${analysis.sessionId}`)}
-                                    >
-                                        <CardHeader>
-                                            <CardTitle className="flex items-center justify-between">
-                                                <div className="flex items-center gap-3">
-                                                    <Calendar className="w-5 h-5 text-speech-green" />
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="font-bricolage text-speech-green">
-                                                            {sessionType} Session {analyses.length - actualIndex}
-                                                        </span>
-                                                        <span className={`px-2 py-1 text-xs rounded-full font-medium ${sessionType === 'JAM' ? 'bg-blue-100 text-blue-800' :
-                                                            sessionType === 'Passage' ? 'bg-green-100 text-green-800' :
-                                                                'bg-gray-100 text-gray-800'
-                                                            }`}>
-                                                            {sessionType}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                <div className="flex items-center gap-4">
-                                                    <span className="font-bricolage text-sm text-speech-green/70">
-                                                        {formatDate(analysis.analyzedAt)}
-                                                    </span>
-                                                    <div className="text-speech-green/50 group-hover:text-speech-green transition-colors">
-                                                        <Target className="w-5 h-5" />
-                                                    </div>
-                                                </div>
-                                            </CardTitle>
-                                        </CardHeader>
-                                        <CardContent>
-                                            {/* Stutter Analysis Results */}
-                                            {analysis.confidences && (
-                                                <div className="mb-6">
-                                                    <h4 className="font-bricolage font-medium text-speech-green mb-4">Stutter Analysis Results</h4>
-                                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                                        {analysis.confidences.blocking !== undefined && (
-                                                            <div className="text-center">
-                                                                <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                                                                    <span className="font-bricolage font-bold text-red-600 text-xs">
-                                                                        {Math.round(analysis.confidences.blocking * 100)}%
-                                                                    </span>
-                                                                </div>
-                                                                <div className="font-bricolage text-xs font-medium text-speech-green">Blocking</div>
-                                                            </div>
-                                                        )}
-
-                                                        {analysis.confidences.prolongation !== undefined && (
-                                                            <div className="text-center">
-                                                                <div className="w-14 h-14 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                                                                    <span className="font-bricolage font-bold text-orange-600 text-xs">
-                                                                        {Math.round(analysis.confidences.prolongation * 100)}%
-                                                                    </span>
-                                                                </div>
-                                                                <div className="font-bricolage text-xs font-medium text-speech-green">Prolongation</div>
-                                                            </div>
-                                                        )}
-
-                                                        {analysis.confidences['sound-repetition'] !== undefined && (
-                                                            <div className="text-center">
-                                                                <div className="w-14 h-14 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                                                                    <span className="font-bricolage font-bold text-yellow-600 text-xs">
-                                                                        {Math.round(analysis.confidences['sound-repetition'] * 100)}%
-                                                                    </span>
-                                                                </div>
-                                                                <div className="font-bricolage text-xs font-medium text-speech-green">Sound Repetition</div>
-                                                            </div>
-                                                        )}
-
-                                                        {analysis.confidences['word-repetition'] !== undefined && (
-                                                            <div className="text-center">
-                                                                <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                                                                    <span className="font-bricolage font-bold text-blue-600 text-xs">
-                                                                        {Math.round(analysis.confidences['word-repetition'] * 100)}%
-                                                                    </span>
-                                                                </div>
-                                                                <div className="font-bricolage text-xs font-medium text-speech-green">Word Repetition</div>
-                                                            </div>
-                                                        )}
-
-                                                        {analysis.confidences.interjection !== undefined && (
-                                                            <div className="text-center">
-                                                                <div className="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                                                                    <span className="font-bricolage font-bold text-purple-600 text-xs">
-                                                                        {Math.round(analysis.confidences.interjection * 100)}%
-                                                                    </span>
-                                                                </div>
-                                                                <div className="font-bricolage text-xs font-medium text-speech-green">Interjection</div>
-                                                            </div>
-                                                        )}
-
-                                                        {analysis.confidences.normal !== undefined && (
-                                                            <div className="text-center">
-                                                                <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                                                                    <span className="font-bricolage font-bold text-green-600 text-xs">
-                                                                        {Math.round(analysis.confidences.normal * 100)}%
-                                                                    </span>
-                                                                </div>
-                                                                <div className="font-bricolage text-xs font-medium text-speech-green">Normal Speech</div>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </CardContent>
-                                    </Card>
-                                );
-                            })}
-
-                            {/* Pagination */}
-                            {analyses.length > itemsPerPage && (
-                                <div className="flex items-center justify-between pt-6 border-t border-speech-green/20">
-                                    <div className="text-sm text-speech-green/70">
-                                        Showing {Math.min((currentPage - 1) * itemsPerPage + 1, analyses.length)} to {Math.min(currentPage * itemsPerPage, analyses.length)} of {analyses.length} sessions
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                                            disabled={currentPage === 1}
-                                            className="border-speech-green text-speech-green hover:bg-speech-green hover:text-white"
-                                        >
-                                            <ChevronLeft className="w-4 h-4" />
-                                            Previous
-                                        </Button>
-
-                                        <div className="flex items-center gap-1">
-                                            {Array.from({ length: Math.ceil(analyses.length / itemsPerPage) }, (_, i) => i + 1)
-                                                .filter(page => {
-                                                    const totalPages = Math.ceil(analyses.length / itemsPerPage);
-                                                    if (totalPages <= 5) return true;
-                                                    if (page === 1 || page === totalPages) return true;
-                                                    if (Math.abs(page - currentPage) <= 1) return true;
-                                                    return false;
-                                                })
-                                                .map((page, index, array) => (
-                                                    <React.Fragment key={page}>
-                                                        {index > 0 && array[index - 1] !== page - 1 && (
-                                                            <span className="text-speech-green/50">...</span>
-                                                        )}
-                                                        <Button
-                                                            variant={currentPage === page ? "default" : "outline"}
-                                                            size="sm"
-                                                            onClick={() => setCurrentPage(page)}
-                                                            className={currentPage === page
-                                                                ? "bg-speech-green text-white"
-                                                                : "border-speech-green text-speech-green hover:bg-speech-green hover:text-white"
-                                                            }
-                                                        >
-                                                            {page}
-                                                        </Button>
-                                                    </React.Fragment>
-                                                ))}
+                        {/* Paginated Audio Files List */}
+                        {allAudioFiles.length > 0 && (
+                            <Card className="mb-8">
+                                <CardHeader>
+                                    <CardTitle className="flex items-center justify-between font-bricolage text-speech-green">
+                                        <div className="flex items-center gap-3">
+                                            <Mic className="w-5 h-5" />
+                                            All Audio Files ({allAudioFiles.length} total)
                                         </div>
-
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => setCurrentPage(prev => Math.min(Math.ceil(analyses.length / itemsPerPage), prev + 1))}
-                                            disabled={currentPage === Math.ceil(analyses.length / itemsPerPage)}
-                                            className="border-speech-green text-speech-green hover:bg-speech-green hover:text-white"
-                                        >
-                                            Next
-                                            <ChevronRight className="w-4 h-4" />
-                                        </Button>
+                                        <div className="text-sm font-normal text-speech-green/70">
+                                            Showing {((currentPage - 1) * itemsPerPage) + 1}-{Math.min(currentPage * itemsPerPage, allAudioFiles.length)} of {allAudioFiles.length}
+                                        </div>
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    {loadingAnalyses && (
+                                        <div className="text-center py-4">
+                                            <Loader2 className="w-6 h-6 animate-spin mx-auto text-speech-green mb-2" />
+                                            <p className="text-sm text-speech-green/70">Loading analyses...</p>
+                                        </div>
+                                    )}
+                                    
+                                    <div className="space-y-3">
+                                        {allAudioFiles.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((audioFile, index) => {
+                                            const globalIndex = (currentPage - 1) * itemsPerPage + index;
+                                            const hasAnalysis = globalIndex < maxAnalysisDisplay && analysesData[audioFile.sessionId];
+                                            const fileAnalysis = analysesData[audioFile.sessionId];
+                                            
+                                            // Determine session type
+                                            const sessionType = audioFile.sessionId.startsWith('jam') ? 'jam' : 
+                                                audioFile.sessionId.startsWith('session') ? 'passage' : 'Unknown';
+                                            
+                                            // Check if date is before Oct 21, 2025
+                                            const fileDate = new Date(audioFile.uploadedAt);
+                                            const cutoffDate = new Date('2025-10-21');
+                                            const isBeforeCutoff = fileDate < cutoffDate;
+                                            
+                                            return (
+                                                <Card
+                                                    key={audioFile.sessionId}
+                                                    className="cursor-pointer transition-all duration-200 hover:shadow-lg"
+                                                    onClick={() => {
+                                                        if (hasAnalysis && !isBeforeCutoff) {
+                                                            navigate(`/analysis/${audioFile.sessionId}`);
+                                                        }
+                                                    }}
+                                                >
+                                                    <CardContent className="p-4">
+                                                        <div className="flex items-center justify-between">
+                                                            <div className="flex items-center gap-4 flex-1">
+                                                                <div className="p-2 rounded-lg bg-gray-100 text-gray-600">
+                                                                    <Mic className="w-5 h-5" />
+                                                                </div>
+                                                                <div className="flex-1">
+                                                                    <div className="flex items-center gap-2 mb-1">
+                                                                        <span className="font-bricolage font-semibold text-gray-800">
+                                                                            {formatSessionDisplayName(audioFile.sessionId, audioFile.uploadedAt)}
+                                                                        </span>
+                                                                        <span className={`px-2 py-0.5 text-xs rounded-full font-medium ${
+                                                                            sessionType === 'jam' ? 'bg-blue-100 text-blue-800' :
+                                                                            sessionType === 'passage' ? 'bg-green-100 text-green-800' :
+                                                                            'bg-gray-100 text-gray-800'
+                                                                        }`}>
+                                                                            {sessionType}
+                                                                        </span>
+                                                                        {hasAnalysis && (
+                                                                            <span className="px-2 py-0.5 text-xs rounded-full bg-green-100 text-green-800 font-medium">
+                                                                                Analyzed
+                                                                            </span>
+                                                                        )}
+                                                                        {globalIndex >= maxAnalysisDisplay && (
+                                                                            <span className="px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-600 font-medium">
+                                                                                No Analysis
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                    {hasAnalysis && fileAnalysis && (
+                                                                        <div className="mt-2 flex items-center gap-4 text-xs">
+                                                                            {fileAnalysis.summary && (
+                                                                                <div className="text-green-700">
+                                                                                    {Object.keys(fileAnalysis.summary).length} patterns detected
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center gap-2">
+                                                                {isBeforeCutoff ? (
+                                                                    <Button
+                                                                        variant="outline"
+                                                                        size="sm"
+                                                                        disabled
+                                                                        className="font-bricolage border-gray-300 text-gray-400 cursor-not-allowed"
+                                                                    >
+                                                                        Feature Not Implemented
+                                                                    </Button>
+                                                                ) : hasAnalysis ? (
+                                                                    <Button
+                                                                        variant="outline"
+                                                                        size="sm"
+                                                                        className="font-bricolage border-speech-green text-speech-green hover:bg-speech-green hover:text-white"
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            navigate(`/analysis/${audioFile.sessionId}`);
+                                                                        }}
+                                                                    >
+                                                                        View Analysis
+                                                                    </Button>
+                                                                ) : globalIndex < maxAnalysisDisplay ? (
+                                                                    <span className="text-xs text-gray-500 font-bricolage">
+                                                                        Analysis loading...
+                                                                    </span>
+                                                                ) : (
+                                                                    <span className="text-xs text-gray-400 font-bricolage">
+                                                                        No Analysis Found
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </CardContent>
+                                                </Card>
+                                            );
+                                        })}
                                     </div>
-                                </div>
-                            )}
-                        </div>
+
+                                    {/* Pagination Controls */}
+                                    {Math.ceil(allAudioFiles.length / itemsPerPage) > 1 && (
+                                        <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                                disabled={currentPage === 1}
+                                                className="font-bricolage border-speech-green text-speech-green hover:bg-speech-green hover:text-white"
+                                            >
+                                                <ChevronLeft className="w-4 h-4 mr-1" />
+                                                Previous
+                                            </Button>
+                                            <div className="flex items-center gap-2">
+                                                {Array.from({ length: Math.min(5, Math.ceil(allAudioFiles.length / itemsPerPage)) }, (_, i) => {
+                                                    const totalPages = Math.ceil(allAudioFiles.length / itemsPerPage);
+                                                    let page;
+                                                    if (totalPages <= 5) {
+                                                        page = i + 1;
+                                                    } else if (currentPage <= 3) {
+                                                        page = i + 1;
+                                                    } else if (currentPage >= totalPages - 2) {
+                                                        page = totalPages - 4 + i;
+                                                    } else {
+                                                        page = currentPage - 2 + i;
+                                                    }
+                                                    return page;
+                                                }).map((page) => (
+                                                    <Button
+                                                        key={page}
+                                                        variant={currentPage === page ? "default" : "outline"}
+                                                        size="sm"
+                                                        onClick={() => setCurrentPage(page)}
+                                                        className={`font-bricolage ${
+                                                            currentPage === page
+                                                                ? 'bg-speech-green hover:bg-speech-green/90 text-white'
+                                                                : 'border-speech-green text-speech-green hover:bg-speech-green hover:text-white'
+                                                        }`}
+                                                    >
+                                                        {page}
+                                                    </Button>
+                                                ))}
+                                            </div>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => setCurrentPage(prev => Math.min(Math.ceil(allAudioFiles.length / itemsPerPage), prev + 1))}
+                                                disabled={currentPage >= Math.ceil(allAudioFiles.length / itemsPerPage)}
+                                                className="font-bricolage border-speech-green text-speech-green hover:bg-speech-green hover:text-white"
+                                            >
+                                                Next
+                                                <ChevronRight className="w-4 h-4 ml-1" />
+                                            </Button>
+                                        </div>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        )}
                     </>
                 ) : (
                     /* No Data State */

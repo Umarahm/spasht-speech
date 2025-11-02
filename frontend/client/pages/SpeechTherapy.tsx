@@ -44,20 +44,47 @@ export default function SpeechTherapy() {
         }
     }, [user, navigate]);
 
-    // Ensure speech synthesis voices are loaded
+    // Store available voices
+    const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
+
+    // Ensure speech synthesis voices are loaded (Android-compatible)
     useEffect(() => {
         const loadVoices = () => {
             const voices = window.speechSynthesis.getVoices();
             if (voices.length > 0) {
                 console.log('Available voices:', voices.map(v => `${v.name} (${v.lang})`));
+                setAvailableVoices(voices);
+            } else {
+                // Android sometimes needs multiple attempts
+                setTimeout(() => {
+                    const retryVoices = window.speechSynthesis.getVoices();
+                    if (retryVoices.length > 0) {
+                        console.log('Voices loaded on retry:', retryVoices.map(v => `${v.name} (${v.lang})`));
+                        setAvailableVoices(retryVoices);
+                    }
+                }, 500);
             }
         };
 
+        // Initial load
         loadVoices();
-        // Some browsers load voices asynchronously
+        
+        // Android browsers often need this event
         if (window.speechSynthesis.onvoiceschanged !== undefined) {
             window.speechSynthesis.onvoiceschanged = loadVoices;
         }
+
+        // Additional retry for Android (some browsers delay voice loading)
+        const retryTimer = setTimeout(() => {
+            loadVoices();
+        }, 1000);
+
+        return () => {
+            clearTimeout(retryTimer);
+            if (window.speechSynthesis.onvoiceschanged) {
+                window.speechSynthesis.onvoiceschanged = null;
+            }
+        };
     }, []);
 
     // English and Hindi letters and words for repetition
@@ -350,21 +377,62 @@ export default function SpeechTherapy() {
     const playAudio = async (text: string, language: string) => {
         setIsPlaying(true);
         try {
+            // Cancel any ongoing speech (Android issue: multiple utterances can conflict)
+            if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+                // Small delay for Android to process cancellation
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+
+            // Function to get voices with retry (Android-specific)
+            const getVoicesWithRetry = async (maxRetries = 3): Promise<SpeechSynthesisVoice[]> => {
+                let voices = window.speechSynthesis.getVoices();
+                
+                // Use stored voices if available (from useEffect)
+                if (availableVoices.length > 0) {
+                    voices = availableVoices;
+                }
+                
+                // Retry if no voices found (Android issue)
+                let retryCount = 0;
+                while (voices.length === 0 && retryCount < maxRetries) {
+                    console.log('No voices found, retrying...', retryCount + 1);
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                    voices = window.speechSynthesis.getVoices();
+                    if (availableVoices.length > 0) {
+                        voices = availableVoices;
+                    }
+                    retryCount++;
+                }
+                
+                return voices.length > 0 ? voices : [];
+            };
+
+            // Get voices
+            let voices = await getVoicesWithRetry();
+            
+            // If still no voices, wait a bit more (Android-specific)
+            if (voices.length === 0) {
+                await new Promise(resolve => setTimeout(resolve, 300));
+                voices = await getVoicesWithRetry();
+            }
+
             // Use Web Speech API for text-to-speech
             const utterance = new SpeechSynthesisUtterance(text);
 
-            // Get available voices
-            const voices = window.speechSynthesis.getVoices();
-
             if (language === 'hindi') {
-                // Try different Hindi language codes
-                const hindiLangCodes = ['hi-IN', 'hi', 'en-IN'];
-                let hindiVoice = null;
+                // Try different Hindi language codes (Android might use different codes)
+                const hindiLangCodes = ['hi-IN', 'hi', 'hi-IN-x-remote', 'en-IN'];
+                let hindiVoice: SpeechSynthesisVoice | null = null;
 
+                // First, try exact language code matches
                 for (const langCode of hindiLangCodes) {
-                    hindiVoice = voices.find(voice => voice.lang === langCode);
+                    hindiVoice = voices.find(voice => 
+                        voice.lang === langCode || 
+                        voice.lang.startsWith('hi')
+                    );
                     if (hindiVoice) {
-                        utterance.lang = langCode;
+                        utterance.lang = hindiVoice.lang;
                         break;
                     }
                 }
@@ -373,8 +441,10 @@ export default function SpeechTherapy() {
                 if (!hindiVoice) {
                     hindiVoice = voices.find(voice =>
                         voice.lang.includes('IN') ||
+                        voice.lang.includes('hi') ||
                         voice.name.toLowerCase().includes('india') ||
-                        voice.name.toLowerCase().includes('hindi')
+                        voice.name.toLowerCase().includes('hindi') ||
+                        voice.name.toLowerCase().includes('hin')
                     );
                     if (hindiVoice) {
                         utterance.lang = hindiVoice.lang;
@@ -385,8 +455,15 @@ export default function SpeechTherapy() {
                     utterance.voice = hindiVoice;
                     console.log('Using Hindi voice:', hindiVoice.name, hindiVoice.lang);
                 } else {
-                    console.log('No Hindi voice found, using default');
-                    utterance.lang = 'hi-IN'; // Fallback
+                    console.warn('No Hindi voice found, using hi-IN fallback');
+                    // Android fallback: set lang even without voice
+                    utterance.lang = 'hi-IN';
+                    // Try to find any voice that might work
+                    const fallbackVoice = voices.find(voice => voice.lang.includes('IN')) || voices[0];
+                    if (fallbackVoice) {
+                        utterance.voice = fallbackVoice;
+                        console.log('Using fallback voice:', fallbackVoice.name, fallbackVoice.lang);
+                    }
                 }
             } else {
                 utterance.lang = 'en-US';
@@ -413,13 +490,42 @@ export default function SpeechTherapy() {
             utterance.pitch = 1;
             utterance.volume = 0.9;
 
-            utterance.onend = () => setIsPlaying(false);
-            utterance.onerror = () => setIsPlaying(false);
+            // Enhanced error handling for Android
+            utterance.onend = () => {
+                console.log('Speech ended');
+                setIsPlaying(false);
+            };
+            
+            utterance.onerror = (event) => {
+                console.error('Speech error:', event);
+                setIsPlaying(false);
+                // Android-specific: try again with different settings
+                if (language === 'hindi' && event.error === 'not-allowed') {
+                    console.log('Permission error, retrying with default voice...');
+                    setTimeout(() => {
+                        const retryUtterance = new SpeechSynthesisUtterance(text);
+                        retryUtterance.lang = 'hi-IN';
+                        retryUtterance.rate = 0.8;
+                        retryUtterance.pitch = 1;
+                        retryUtterance.volume = 0.9;
+                        retryUtterance.onend = () => setIsPlaying(false);
+                        retryUtterance.onerror = () => setIsPlaying(false);
+                        window.speechSynthesis.speak(retryUtterance);
+                    }, 500);
+                }
+            };
+
+            // Android-specific: ensure speech synthesis is ready
+            if (window.speechSynthesis.pending) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
 
             window.speechSynthesis.speak(utterance);
         } catch (error) {
             console.error('Error playing audio:', error);
             setIsPlaying(false);
+            // Show user-friendly error
+            alert('Unable to play audio. Please check your device settings and ensure text-to-speech is enabled.');
         }
     };
 
