@@ -266,6 +266,29 @@ export default function JAM() {
         try {
             console.log('🎙️ Starting JAM recording...');
 
+            // Ensure secure context (required for mic access)
+            if (window.isSecureContext === false) {
+                toast({
+                    variant: "destructive",
+                    title: "Microphone Requires HTTPS",
+                    description: "Please use the HTTPS version of the app or install the PWA from a secure origin.",
+                });
+                throw new Error('Microphone requires a secure (HTTPS) context.');
+            }
+
+            // Check microphone permission state when supported
+            try {
+                const perm: any = await (navigator as any).permissions?.query?.({ name: 'microphone' as any });
+                if (perm && perm.state === 'denied') {
+                    toast({
+                        variant: "destructive",
+                        title: "Microphone Permission Blocked",
+                        description: "On Android, go to App info > Permissions > Microphone and set to Allow for this app.",
+                    });
+                    throw new Error('Microphone permission is blocked by the browser/OS.');
+                }
+            } catch {}
+
             const stream = await navigator.mediaDevices.getUserMedia({
                 audio: {
                     echoCancellation: true,
@@ -365,10 +388,13 @@ export default function JAM() {
 
         } catch (error: any) {
             console.error('❌ Error starting recording:', error);
+            const message = error?.name === 'NotAllowedError'
+                ? 'Microphone access denied. On Android, open App info > Permissions > Microphone and allow access.'
+                : error?.message || 'Could not start recording.';
             toast({
                 variant: "destructive",
-                title: "Recording Failed",
-                description: error.message || "Unable to start audio recording. Please check your microphone permissions.",
+                title: "Microphone Error",
+                description: message,
             });
         }
     };
