@@ -7,12 +7,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { useAuthContext } from '../components/auth/AuthProvider';
-import { FileText, BookOpen, Mic, MicOff, Play, Square, Loader2, BarChart3, CheckCircle } from "lucide-react";
+import { FileText, BookOpen, Mic, MicOff, Play, Square, Loader2, BarChart3, CheckCircle, Sparkles } from "lucide-react";
 import { PassageResponse, RecordingSession, SpeechAnalysisResult } from '../../../backend/shared/api';
 import { useToast } from '@/hooks/use-toast';
 import SpeechAnalysisVisualizer from '../components/SpeechAnalysisVisualizer';
 import { apiFetch } from '../lib/api';
 import AnalysisSummaryChart from '../components/AnalysisSummaryChart';
+import MarkdownRenderer from '../components/MarkdownRenderer';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 
 interface RecordingState {
     isRecording: boolean;
@@ -115,6 +122,12 @@ export default function Passages() {
     const [analyzing, setAnalyzing] = useState(false);
     const [hasUploaded, setHasUploaded] = useState(false);
     const [analysisResult, setAnalysisResult] = useState<SpeechAnalysisResult | null>(null);
+    const [recommendations, setRecommendations] = useState<string | null>(null);
+    const [loadingRecommendations, setLoadingRecommendations] = useState(false);
+    const [hasExistingRecommendations, setHasExistingRecommendations] = useState(false);
+    const [showRecommendationsModal, setShowRecommendationsModal] = useState(false);
+    const [existingRecommendations, setExistingRecommendations] = useState<string | null>(null);
+    const [loadingExistingRecommendations, setLoadingExistingRecommendations] = useState(false);
 
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
@@ -392,6 +405,108 @@ export default function Passages() {
             setAnalyzing(false);
         }
     };
+
+    // Get recommendations
+    const getRecommendations = async () => {
+        if (!session || !analysisResult) return;
+
+        setLoadingRecommendations(true);
+        try {
+            console.log('🎯 Getting recommendations for session:', session.sessionId);
+
+            toast({
+                variant: "speech",
+                title: "Generating Recommendations",
+                description: "AI is creating personalized recommendations for you...",
+            });
+
+            const response = await apiFetch('/api/recordings/get-recommendations', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    sessionId: session.sessionId,
+                    userId: user.uid,
+                    userEmail: user.email || ''
+                }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('❌ Recommendations error:', errorData);
+                throw new Error(errorData.message || 'Failed to get recommendations');
+            }
+
+            const data = await response.json();
+            console.log('✅ Recommendations received');
+            setRecommendations(data.recommendations);
+            setHasExistingRecommendations(true); // Mark as existing after generation
+
+            toast({
+                variant: "speech",
+                title: "Recommendations Ready",
+                description: "Your personalized recommendations are ready!",
+            });
+        } catch (error: any) {
+            console.error('❌ Error getting recommendations:', error);
+            toast({
+                variant: "destructive",
+                title: "Failed to Get Recommendations",
+                description: error.message || 'Failed to generate recommendations. Please try again.',
+            });
+        } finally {
+            setLoadingRecommendations(false);
+        }
+    };
+
+    // Check if recommendations exist for this session
+    const checkExistingRecommendations = async () => {
+        if (!session || !user) return;
+
+        try {
+            const response = await apiFetch(`/api/users/${user.uid}/recommendations/${session.sessionId}/check`);
+            if (response.ok) {
+                const data = await response.json();
+                setHasExistingRecommendations(data.exists || false);
+            }
+        } catch (error) {
+            console.error('Error checking recommendations:', error);
+        }
+    };
+
+    // Fetch existing recommendations
+    const fetchExistingRecommendations = async () => {
+        if (!session || !user) return;
+
+        setLoadingExistingRecommendations(true);
+        try {
+            const response = await apiFetch(`/api/users/${user.uid}/recommendations/${session.sessionId}`);
+            if (response.ok) {
+                const data = await response.json();
+                setExistingRecommendations(data.recommendations);
+                setShowRecommendationsModal(true);
+            } else {
+                throw new Error('Failed to fetch recommendations');
+            }
+        } catch (error) {
+            console.error('Error fetching recommendations:', error);
+            toast({
+                variant: "destructive",
+                title: "Failed to Load Recommendations",
+                description: "Could not load recommendations. Please try again.",
+            });
+        } finally {
+            setLoadingExistingRecommendations(false);
+        }
+    };
+
+    // Check for existing recommendations when analysis is complete
+    useEffect(() => {
+        if (analysisResult && session) {
+            checkExistingRecommendations();
+        }
+    }, [analysisResult, session]);
 
     // Auto-upload when recording stops
     useEffect(() => {
@@ -878,6 +993,67 @@ export default function Passages() {
                                     <div className="mb-8">
                                         <AnalysisSummaryChart summary={analysisResult.summary} />
                                     </div>
+
+                                    {/* Recommendations Buttons */}
+                                    <div className="mb-8 flex justify-center gap-4 flex-wrap">
+                                        {hasExistingRecommendations && (
+                                            <Button
+                                                onClick={fetchExistingRecommendations}
+                                                disabled={loadingExistingRecommendations}
+                                                variant="outline"
+                                                className="font-bricolage border-2 border-speech-green text-speech-green hover:bg-speech-green hover:text-white px-8 py-6 text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                                            >
+                                                {loadingExistingRecommendations ? (
+                                                    <>
+                                                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                                                        Loading...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Sparkles className="w-5 h-5 mr-2" />
+                                                        View Recommendations
+                                                    </>
+                                                )}
+                                            </Button>
+                                        )}
+                                        <Button
+                                            onClick={getRecommendations}
+                                            disabled={loadingRecommendations || !analysisResult}
+                                            className="font-bricolage bg-gradient-to-r from-speech-green to-green-600 hover:from-green-600 hover:to-speech-green text-white px-8 py-6 text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                                        >
+                                            {loadingRecommendations ? (
+                                                <>
+                                                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                                                    Generating Recommendations...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Sparkles className="w-5 h-5 mr-2" />
+                                                    Get Personalized Recommendations
+                                                </>
+                                            )}
+                                        </Button>
+                                    </div>
+
+                                    {/* Recommendations Display */}
+                                    {recommendations && (
+                                        <div className="mb-8">
+                                            <Card className="bg-white/90 backdrop-blur-sm border-2 border-speech-green/20 shadow-xl">
+                                                <CardHeader>
+                                                    <CardTitle className="font-bricolage text-2xl text-speech-green flex items-center gap-2">
+                                                        <Sparkles className="w-6 h-6" />
+                                                        Personalized Recommendations
+                                                    </CardTitle>
+                                                </CardHeader>
+                                                <CardContent>
+                                                    <MarkdownRenderer 
+                                                        content={recommendations}
+                                                        className="font-bricolage"
+                                                    />
+                                                </CardContent>
+                                            </Card>
+                                        </div>
+                                    )}
                                 </>
                             )}
 
@@ -904,6 +1080,26 @@ export default function Passages() {
                     </Button>
                 </div>
             </div>
+
+            {/* Recommendations Modal */}
+            <Dialog open={showRecommendationsModal} onOpenChange={setShowRecommendationsModal}>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle className="font-bricolage text-2xl text-speech-green flex items-center gap-2">
+                            <Sparkles className="w-6 h-6" />
+                            Personalized Recommendations
+                        </DialogTitle>
+                    </DialogHeader>
+                    {existingRecommendations && (
+                        <div className="mt-4">
+                            <MarkdownRenderer 
+                                content={existingRecommendations}
+                                className="font-bricolage"
+                            />
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
 
             <Footer />
         </div>

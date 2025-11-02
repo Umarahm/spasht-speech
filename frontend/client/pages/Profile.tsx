@@ -188,7 +188,7 @@ const Profile = () => {
                                     className="font-bricolage border-speech-green text-speech-green hover:bg-speech-green/10"
                                 >
                                     <Copy className="mr-2 h-4 w-4" />
-                                    {copied ? 'Copied!' : 'Copy'}
+                                    {copied ? 'Copied!' : ''}
                                 </Button>
                             </div>
 
