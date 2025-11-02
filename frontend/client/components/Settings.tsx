@@ -140,7 +140,21 @@ export default function Settings({ open, onOpenChange }: SettingsProps) {
         setMicTestStatus('testing');
 
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            // Use utility function for better Android support
+            const { requestMicrophonePermission } = await import('@/utils/microphonePermission');
+            const result = await requestMicrophonePermission({ audio: true });
+
+            if (!result.success || !result.stream) {
+                setMicTestStatus('failed');
+                toast({
+                    variant: "destructive",
+                    title: "Microphone Test Failed",
+                    description: result.error || "Could not access microphone.",
+                });
+                return;
+            }
+
+            const stream = result.stream;
             const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
             const analyser = audioContext.createAnalyser();
             const microphone = audioContext.createMediaStreamSource(stream);

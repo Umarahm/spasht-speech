@@ -139,8 +139,9 @@ export default function DAFSession() {
                 throw new Error('Web Audio API is not supported in this browser. Please use a modern browser like Chrome, Firefox, or Safari.');
             }
 
-            // Request microphone permission
-            const stream = await navigator.mediaDevices.getUserMedia({
+            // Request microphone permission using utility function
+            const { requestMicrophonePermission } = await import('@/utils/microphonePermission');
+            const result = await requestMicrophonePermission({
                 audio: {
                     echoCancellation: false,
                     noiseSuppression: false,
@@ -150,6 +151,14 @@ export default function DAFSession() {
                 }
             });
 
+            if (!result.success || !result.stream) {
+                setAudioError(result.error || 'Microphone access failed');
+                setMicPermissionGranted(false);
+                alert(result.error || 'Microphone access is required for DAF sessions.');
+                return false;
+            }
+
+            const stream = result.stream;
             setMicPermissionGranted(true);
 
             // Create audio context

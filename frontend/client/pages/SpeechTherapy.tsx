@@ -531,7 +531,20 @@ export default function SpeechTherapy() {
 
     const startRecording = async () => {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            // Use utility function for better Android support
+            const { requestMicrophonePermission } = await import('@/utils/microphonePermission');
+            const result = await requestMicrophonePermission({ audio: true });
+
+            if (!result.success || !result.stream) {
+                toast({
+                    variant: "destructive",
+                    title: "Microphone Access Failed",
+                    description: result.error || "Could not access microphone. Please check permissions.",
+                });
+                return;
+            }
+
+            const stream = result.stream;
             const mediaRecorder = new MediaRecorder(stream);
             mediaRecorderRef.current = mediaRecorder;
             audioChunksRef.current = [];
