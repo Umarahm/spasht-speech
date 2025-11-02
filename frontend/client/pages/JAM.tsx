@@ -276,20 +276,9 @@ export default function JAM() {
                 throw new Error('Microphone requires a secure (HTTPS) context.');
             }
 
-            // Check microphone permission state when supported
-            try {
-                const perm: any = await (navigator as any).permissions?.query?.({ name: 'microphone' as any });
-                if (perm && perm.state === 'denied') {
-                    toast({
-                        variant: "destructive",
-                        title: "Microphone Permission Blocked",
-                        description: "On Android, go to App info > Permissions > Microphone and set to Allow for this app.",
-                    });
-                    throw new Error('Microphone permission is blocked by the browser/OS.');
-                }
-            } catch {}
-
-            const stream = await navigator.mediaDevices.getUserMedia({
+            // Use utility function for better Android support
+            const { requestMicrophonePermission } = await import('@/utils/microphonePermission');
+            const result = await requestMicrophonePermission({
                 audio: {
                     echoCancellation: true,
                     noiseSuppression: true,
@@ -297,7 +286,16 @@ export default function JAM() {
                 }
             });
 
-            streamRef.current = stream;
+            if (!result.success || !result.stream) {
+                toast({
+                    variant: "destructive",
+                    title: "Microphone Access Failed",
+                    description: result.error || "Could not access microphone. Please check permissions.",
+                });
+                throw new Error(result.error || 'Microphone access failed');
+            }
+
+            streamRef.current = result.stream;
             audioChunksRef.current = [];
 
             // Prefer WAV format
