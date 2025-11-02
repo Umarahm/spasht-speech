@@ -245,7 +245,7 @@ export default function Passages() {
 
             console.log('🎙️ Selected audio format:', mimeType);
 
-            const mediaRecorder = new MediaRecorder(stream, {
+            const mediaRecorder = new MediaRecorder(result.stream, {
                 mimeType: mimeType
             });
 
