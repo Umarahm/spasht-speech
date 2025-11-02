@@ -1148,6 +1148,12 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Explicitly allow microphone usage via Permissions-Policy (formerly Feature-Policy)
+app.use((req, res, next) => {
+  res.setHeader('Permissions-Policy', 'microphone=(self)');
+  next();
+});
+
 // Backend info page - shown when backend is accessed directly
 app.get("/", (req, res) => {
   res.setHeader('Content-Type', 'text/html');
