@@ -988,12 +988,15 @@ export default function SpeechAnalysis() {
 
                         {/* Paginated Audio Files List */}
                         {allAudioFiles.length > 0 && (
-                            <Card className="mb-8">
-                                <CardHeader>
-                                    <CardTitle className="flex items-center justify-between font-bricolage text-speech-green">
+                            <Card className="mb-8 bg-white/90 backdrop-blur-sm border-2 border-speech-green/20 shadow-xl">
+                                <CardHeader className="pb-4">
+                                    <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 font-bricolage text-speech-green">
                                         <div className="flex items-center gap-3">
-                                            <Mic className="w-5 h-5" />
-                                            All Audio Files ({allAudioFiles.length} total)
+                                            <Mic className="w-5 h-5 text-speech-green" />
+                                            <span className="text-xl sm:text-2xl font-bold">All Audio Files</span>
+                                            <span className="px-2 py-1 text-xs rounded-full bg-speech-green/10 text-speech-green font-medium">
+                                                {allAudioFiles.length} total
+                                            </span>
                                         </div>
                                         <div className="text-sm font-normal text-speech-green/70">
                                             Showing {((currentPage - 1) * itemsPerPage) + 1}-{Math.min(currentPage * itemsPerPage, allAudioFiles.length)} of {allAudioFiles.length}
@@ -1002,9 +1005,9 @@ export default function SpeechAnalysis() {
                                 </CardHeader>
                                 <CardContent>
                                     {loadingAnalyses && (
-                                        <div className="text-center py-4">
+                                        <div className="text-center py-8">
                                             <Loader2 className="w-6 h-6 animate-spin mx-auto text-speech-green mb-2" />
-                                            <p className="text-sm text-speech-green/70">Loading analyses...</p>
+                                            <p className="text-sm text-speech-green/70 font-bricolage">Loading analyses...</p>
                                         </div>
                                     )}
                                     
@@ -1026,7 +1029,11 @@ export default function SpeechAnalysis() {
                                             return (
                                                 <Card
                                                     key={audioFile.sessionId}
-                                                    className="cursor-pointer transition-all duration-200 hover:shadow-lg"
+                                                    className={`cursor-pointer transition-all duration-200 hover:shadow-lg border-2 ${
+                                                        hasAnalysis && !isBeforeCutoff 
+                                                            ? 'border-speech-green/30 hover:border-speech-green/50 bg-white' 
+                                                            : 'border-speech-green/10 bg-speech-bg'
+                                                    }`}
                                                     onClick={() => {
                                                         if (hasAnalysis && !isBeforeCutoff) {
                                                             navigate(`/analysis/${audioFile.sessionId}`);
@@ -1034,17 +1041,21 @@ export default function SpeechAnalysis() {
                                                     }}
                                                 >
                                                     <CardContent className="p-4">
-                                                        <div className="flex items-center justify-between">
-                                                            <div className="flex items-center gap-4 flex-1">
-                                                                <div className="p-2 rounded-lg bg-gray-100 text-gray-600">
-                                                                    <Mic className="w-5 h-5" />
+                                                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                                            <div className="flex items-start sm:items-center gap-3 flex-1 min-w-0">
+                                                                <div className={`p-2 rounded-lg flex-shrink-0 ${
+                                                                    hasAnalysis && !isBeforeCutoff
+                                                                        ? 'bg-speech-green/10 text-speech-green'
+                                                                        : 'bg-speech-green/5 text-speech-green/50'
+                                                                }`}>
+                                                                    <Mic className="w-4 h-4 sm:w-5 sm:h-5" />
                                                                 </div>
-                                                                <div className="flex-1">
-                                                                    <div className="flex items-center gap-2 mb-1">
-                                                                        <span className="font-bricolage font-semibold text-gray-800">
+                                                                <div className="flex-1 min-w-0">
+                                                                    <div className="flex flex-wrap items-center gap-2 mb-1">
+                                                                        <span className="font-bricolage font-semibold text-speech-green text-sm sm:text-base truncate">
                                                                             {formatSessionDisplayName(audioFile.sessionId, audioFile.uploadedAt)}
                                                                         </span>
-                                                                        <span className={`px-2 py-0.5 text-xs rounded-full font-medium ${
+                                                                        <span className={`px-2 py-0.5 text-xs rounded-full font-medium flex-shrink-0 ${
                                                                             sessionType === 'jam' ? 'bg-blue-100 text-blue-800' :
                                                                             sessionType === 'passage' ? 'bg-green-100 text-green-800' :
                                                                             'bg-gray-100 text-gray-800'
@@ -1052,20 +1063,20 @@ export default function SpeechAnalysis() {
                                                                             {sessionType}
                                                                         </span>
                                                                         {hasAnalysis && (
-                                                                            <span className="px-2 py-0.5 text-xs rounded-full bg-green-100 text-green-800 font-medium">
+                                                                            <span className="px-2 py-0.5 text-xs rounded-full bg-speech-green/20 text-speech-green font-medium flex-shrink-0">
                                                                                 Analyzed
                                                                             </span>
                                                                         )}
                                                                         {globalIndex >= maxAnalysisDisplay && (
-                                                                            <span className="px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-600 font-medium">
+                                                                            <span className="px-2 py-0.5 text-xs rounded-full bg-speech-green/10 text-speech-green/70 font-medium flex-shrink-0">
                                                                                 No Analysis
                                                                             </span>
                                                                         )}
                                                                     </div>
                                                                     {hasAnalysis && fileAnalysis && (
-                                                                        <div className="mt-2 flex items-center gap-4 text-xs">
+                                                                        <div className="mt-2 flex items-center gap-4 text-xs text-speech-green/70 font-bricolage">
                                                                             {fileAnalysis.summary && (
-                                                                                <div className="text-green-700">
+                                                                                <div className="text-speech-green">
                                                                                     {Object.keys(fileAnalysis.summary).length} patterns detected
                                                                                 </div>
                                                                             )}
@@ -1073,13 +1084,13 @@ export default function SpeechAnalysis() {
                                                                     )}
                                                                 </div>
                                                             </div>
-                                                            <div className="flex items-center gap-2">
+                                                            <div className="flex items-center gap-2 flex-shrink-0 sm:self-center">
                                                                 {isBeforeCutoff ? (
                                                                     <Button
                                                                         variant="outline"
                                                                         size="sm"
                                                                         disabled
-                                                                        className="font-bricolage border-gray-300 text-gray-400 cursor-not-allowed"
+                                                                        className="font-bricolage border-speech-green/20 text-speech-green/50 cursor-not-allowed whitespace-nowrap"
                                                                     >
                                                                         Feature Not Implemented
                                                                     </Button>
@@ -1087,7 +1098,7 @@ export default function SpeechAnalysis() {
                                                                     <Button
                                                                         variant="outline"
                                                                         size="sm"
-                                                                        className="font-bricolage border-speech-green text-speech-green hover:bg-speech-green hover:text-white"
+                                                                        className="font-bricolage border-speech-green text-speech-green hover:bg-speech-green hover:text-white whitespace-nowrap"
                                                                         onClick={(e) => {
                                                                             e.stopPropagation();
                                                                             navigate(`/analysis/${audioFile.sessionId}`);
@@ -1096,11 +1107,11 @@ export default function SpeechAnalysis() {
                                                                         View Analysis
                                                                     </Button>
                                                                 ) : globalIndex < maxAnalysisDisplay ? (
-                                                                    <span className="text-xs text-gray-500 font-bricolage">
+                                                                    <span className="text-xs text-speech-green/60 font-bricolage whitespace-nowrap">
                                                                         Analysis loading...
                                                                     </span>
                                                                 ) : (
-                                                                    <span className="text-xs text-gray-400 font-bricolage">
+                                                                    <span className="text-xs text-speech-green/50 font-bricolage whitespace-nowrap">
                                                                         No Analysis Found
                                                                     </span>
                                                                 )}
@@ -1114,18 +1125,18 @@ export default function SpeechAnalysis() {
 
                                     {/* Pagination Controls */}
                                     {Math.ceil(allAudioFiles.length / itemsPerPage) > 1 && (
-                                        <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
+                                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 pt-4 border-t border-speech-green/20">
                                             <Button
                                                 variant="outline"
                                                 size="sm"
                                                 onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                                                 disabled={currentPage === 1}
-                                                className="font-bricolage border-speech-green text-speech-green hover:bg-speech-green hover:text-white"
+                                                className="font-bricolage border-speech-green text-speech-green hover:bg-speech-green hover:text-white w-full sm:w-auto"
                                             >
                                                 <ChevronLeft className="w-4 h-4 mr-1" />
                                                 Previous
                                             </Button>
-                                            <div className="flex items-center gap-2">
+                                            <div className="flex items-center gap-2 flex-wrap justify-center">
                                                 {Array.from({ length: Math.min(5, Math.ceil(allAudioFiles.length / itemsPerPage)) }, (_, i) => {
                                                     const totalPages = Math.ceil(allAudioFiles.length / itemsPerPage);
                                                     let page;
@@ -1160,7 +1171,7 @@ export default function SpeechAnalysis() {
                                                 size="sm"
                                                 onClick={() => setCurrentPage(prev => Math.min(Math.ceil(allAudioFiles.length / itemsPerPage), prev + 1))}
                                                 disabled={currentPage >= Math.ceil(allAudioFiles.length / itemsPerPage)}
-                                                className="font-bricolage border-speech-green text-speech-green hover:bg-speech-green hover:text-white"
+                                                className="font-bricolage border-speech-green text-speech-green hover:bg-speech-green hover:text-white w-full sm:w-auto"
                                             >
                                                 Next
                                                 <ChevronRight className="w-4 h-4 ml-1" />
