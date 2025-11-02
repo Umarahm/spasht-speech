@@ -441,12 +441,12 @@ export default function Settings({ open, onOpenChange }: SettingsProps) {
     if (isMobile) {
         return (
             <Drawer open={open} onOpenChange={onOpenChange}>
-                <DrawerContent className="bg-white max-h-[90vh] overflow-y-auto">
-                    <DrawerHeader>
+                <DrawerContent className="bg-white max-h-[90vh] flex flex-col">
+                    <DrawerHeader className="flex-shrink-0">
                         <DrawerTitle className="sr-only">Settings</DrawerTitle>
                         <DrawerDescription className="sr-only">Configure your speech therapy settings</DrawerDescription>
                     </DrawerHeader>
-                    <div className="px-6 pb-6">
+                    <div className="px-6 pb-6 overflow-y-auto flex-1 min-h-0" style={{ WebkitOverflowScrolling: 'touch' }}>
                         {content}
                     </div>
                 </DrawerContent>
