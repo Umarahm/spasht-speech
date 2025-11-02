@@ -1148,6 +1148,26 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Backend info page - shown when backend is accessed directly
+app.get("/", (req, res) => {
+  res.setHeader('Content-Type', 'text/html');
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>SPASHT Speech - Backend</title>
+    </head>
+    <body>
+        <h1>You're Lost</h1>
+        <p>This is backend for spasht speech</p>
+        <p>Pls visit <a href="https://spasht.netlify.app">spasht.netlify.app</a> or <a href="https://spasht-speech.vercel.app">spasht-speech.vercel.app</a></p>
+    </body>
+    </html>
+  `);
+});
+
 // Health check endpoint
 app.get("/api/health", (req, res) => {
   res.json({
