@@ -173,7 +173,54 @@ const VapiConversation = ({ persona = 'therapist', onSessionEnd, onError, autoSt
 
     const handleVapiError = (error) => {
         console.error('VAPI error:', error);
-        setError('Voice AI error occurred. Please try again.');
+        
+        // Extract user-friendly error message
+        let errorMessage = 'Voice AI error occurred. Please try again.';
+        
+        if (error && typeof error === 'object') {
+            // Prioritize parsed error messages
+            if (error.message) {
+                errorMessage = error.message;
+            } else if (error.body?.message) {
+                errorMessage = error.body.message;
+            } else if (error.body?.error) {
+                errorMessage = error.body.error;
+            } else if (error.apiError?.message) {
+                errorMessage = error.apiError.message;
+            } else if (error.type === 'start-method-error') {
+                // Specific handling for start-method-error
+                if (error.status && error.statusText) {
+                    // Error has been processed, use status info
+                    if (error.status === 401) {
+                        errorMessage = 'Authentication failed. Please check your VAPI public key.';
+                    } else if (error.status === 403) {
+                        errorMessage = 'Access denied. Please check your VAPI credentials and permissions.';
+                    } else if (error.status === 404) {
+                        errorMessage = 'Workflow or endpoint not found. Please check your VAPI workflow ID.';
+                    } else if (error.status === 422) {
+                        errorMessage = 'Invalid configuration. Please check your VAPI settings.';
+                    } else if (error.status >= 500) {
+                        errorMessage = 'VAPI server error. Please try again later.';
+                    } else {
+                        errorMessage = `Failed to start conversation (${error.status}). Please check your VAPI configuration.`;
+                    }
+                } else if (error.error instanceof Response) {
+                    errorMessage = `Failed to start conversation (${error.error.status}). Please check your VAPI configuration and credentials.`;
+                } else {
+                    errorMessage = 'Failed to start conversation. Please check your VAPI configuration and try again.';
+                }
+            } else if (error.status && error.statusText) {
+                // Handle error objects with status fields
+                errorMessage = `Server error (${error.status}: ${error.statusText})`;
+            } else if (error instanceof Response) {
+                // Direct Response object (shouldn't happen with processed errors, but handle it)
+                errorMessage = `Connection error (${error.status}: ${error.statusText}). Please check your VAPI configuration.`;
+            }
+        } else if (typeof error === 'string') {
+            errorMessage = error;
+        }
+        
+        setError(errorMessage);
         onError?.(error);
     };
 
