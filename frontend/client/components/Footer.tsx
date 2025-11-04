@@ -100,7 +100,7 @@ export default function Footer() {
                     {/* Copyright */}
                     <div className="mt-6 md:mt-8 pt-4">
                         <p className="font-bricolage text-sm md:text-lg text-gray-400 tracking-wide">
-                            © [2025] Spasht by Umar Ahmed. All Rights Reserved.
+                            © [2025] Spasht All Rights Reserved.
                         </p>
                     </div>
                 </div>

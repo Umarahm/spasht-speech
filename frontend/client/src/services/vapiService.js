@@ -17,11 +17,17 @@ class VapiService {
 
     async initialize() {
         try {
-            const publicKey = import.meta.env.VITE_VAPI_PUBLIC_KEY;
-            const workflowId = import.meta.env.VITE_VAPI_WORKFLOW_ID;
+            // Support both VITE_VAPI_PUBLIC_KEY and VITE_VAPI_API_KEY for public key
+            const publicKey = import.meta.env.VITE_VAPI_PUBLIC_KEY || import.meta.env.VITE_VAPI_API_KEY;
+            // Support both VITE_VAPI_ASSISTANT_ID and VITE_VAPI_WORKFLOW_ID for assistant/workflow ID
+            const assistantId = import.meta.env.VITE_VAPI_ASSISTANT_ID || import.meta.env.VITE_VAPI_WORKFLOW_ID;
 
-            if (!publicKey || !workflowId) {
-                throw new Error('VAPI credentials not found in environment variables');
+            if (!publicKey) {
+                throw new Error('VAPI public key not found in environment variables. Please set VITE_VAPI_PUBLIC_KEY or VITE_VAPI_API_KEY.');
+            }
+
+            if (!assistantId) {
+                console.warn('VITE_VAPI_ASSISTANT_ID or VITE_VAPI_WORKFLOW_ID not found. Will use custom configuration instead.');
             }
 
             this.vapi = new Vapi(publicKey);
@@ -67,8 +73,143 @@ class VapiService {
         });
 
         // Error handling
-        this.vapi.on('error', (error) => {
-            this.emit('error', error);
+        this.vapi.on('error', async (error) => {
+            // Handle nested Response objects in error structure
+            let processedError = error;
+            
+            if (error && typeof error === 'object' && error.error instanceof Response) {
+                // The error object contains a nested Response
+                try {
+                    const response = error.error;
+                    let errorJson = {};
+                    let errorText = '';
+                    
+                    // Try to read the response body
+                    try {
+                        // Check if response body is already consumed
+                        if (response.bodyUsed) {
+                            errorText = `HTTP ${response.status}: ${response.statusText}`;
+                        } else {
+                            // Try to clone first
+                            try {
+                                const clonedResponse = response.clone();
+                                errorText = await clonedResponse.text();
+                            } catch (cloneError) {
+                                // If clone fails, try reading directly
+                                errorText = await response.text();
+                            }
+                        }
+                        
+                        // Try to parse as JSON
+                        if (errorText) {
+                            try {
+                                errorJson = JSON.parse(errorText);
+                            } catch {
+                                errorJson = { message: errorText };
+                            }
+                        }
+                    } catch (readError) {
+                        errorJson = { message: `HTTP ${response.status}: ${response.statusText}` };
+                    }
+                    
+                    processedError = {
+                        ...error,
+                        status: response.status,
+                        statusText: response.statusText,
+                        body: errorJson,
+                        message: errorJson.message || errorJson.error || response.statusText || error.message || 'Unknown error',
+                        apiError: {
+                            status: response.status,
+                            statusText: response.statusText,
+                            body: errorJson,
+                            message: errorJson.message || errorJson.error || response.statusText || 'Unknown error'
+                        }
+                    };
+                    
+                    console.error('VAPI API Error:', {
+                        type: error.type,
+                        stage: error.stage,
+                        status: response.status,
+                        statusText: response.statusText,
+                        message: errorJson.message || errorJson.error || response.statusText || 'Unknown error'
+                    });
+                } catch (parseError) {
+                    const response = error.error;
+                    processedError = {
+                        ...error,
+                        status: response.status,
+                        statusText: response.statusText,
+                        message: `HTTP ${response.status}: ${response.statusText}`,
+                        apiError: {
+                            status: response.status,
+                            statusText: response.statusText,
+                            message: `HTTP ${response.status}: ${response.statusText}`
+                        }
+                    };
+                    console.error('VAPI API Error (could not parse body):', {
+                        type: error.type,
+                        stage: error.stage,
+                        status: response.status,
+                        statusText: response.statusText,
+                        parseError: parseError.message
+                    });
+                }
+            } else if (error instanceof Response) {
+                // Direct Response object
+                try {
+                    let errorJson = {};
+                    let errorText = '';
+                    
+                    try {
+                        if (error.bodyUsed) {
+                            errorText = `HTTP ${error.status}: ${error.statusText}`;
+                        } else {
+                            try {
+                                const clonedResponse = error.clone();
+                                errorText = await clonedResponse.text();
+                            } catch {
+                                errorText = await error.text();
+                            }
+                        }
+                        
+                        if (errorText) {
+                            try {
+                                errorJson = JSON.parse(errorText);
+                            } catch {
+                                errorJson = { message: errorText };
+                            }
+                        }
+                    } catch (readError) {
+                        errorJson = { message: `HTTP ${error.status}: ${error.statusText}` };
+                    }
+                    
+                    processedError = {
+                        status: error.status,
+                        statusText: error.statusText,
+                        body: errorJson,
+                        message: errorJson.message || errorJson.error || error.statusText || 'Unknown error',
+                        type: 'start-method-error',
+                        error: error
+                    };
+                    
+                    console.error('VAPI API Error Details (direct Response):', {
+                        status: error.status,
+                        statusText: error.statusText,
+                        body: errorJson,
+                        url: error.url
+                    });
+                } catch (parseError) {
+                    processedError = {
+                        status: error.status,
+                        statusText: error.statusText,
+                        message: `HTTP ${error.status}: ${error.statusText}`,
+                        type: 'start-method-error',
+                        error: error
+                    };
+                }
+            }
+            
+            this.emit('error', processedError);
         });
 
         // Volume level updates
@@ -119,7 +260,8 @@ class VapiService {
                 break;
 
             default:
-                console.log('Unhandled message type:', message.type);
+                // Unhandled message type
+                break;
         }
     }
 
@@ -139,25 +281,36 @@ class VapiService {
             this.conversationState.currentPersona = persona;
             this.conversationState.messages = [];
 
-            // Get persona-specific configuration
-            const personaConfig = this.getPersonaConfig(persona);
-
-            // Configure the call
-            const callConfig = {
-                model: {
-                    provider: 'openai',
-                    model: 'gpt-3.5-turbo',
-                    messages: [
-                        {
-                            role: 'system',
-                            content: personaConfig.model.systemMessage
-                        }
-                    ],
-                    temperature: personaConfig.model.temperature || 0.7
-                },
-                voice: personaConfig.voice,
-                firstMessage: personaConfig.firstMessage
-            };
+            // Check if assistant/workflow ID is available - prefer assistant over custom config
+            const assistantId = import.meta.env.VITE_VAPI_ASSISTANT_ID || import.meta.env.VITE_VAPI_WORKFLOW_ID;
+            
+            let callConfig;
+            
+            if (assistantId) {
+                // Use assistant ID if available
+                callConfig = {
+                    assistantId: assistantId
+                };
+            } else {
+                // Fallback to custom configuration
+                const personaConfig = this.getPersonaConfig(persona);
+                
+                callConfig = {
+                    model: {
+                        provider: 'openai',
+                        model: 'gpt-3.5-turbo',
+                        messages: [
+                            {
+                                role: 'system',
+                                content: personaConfig.model.systemMessage
+                            }
+                        ],
+                        temperature: personaConfig.model.temperature || 0.7
+                    },
+                    voice: personaConfig.voice,
+                    firstMessage: personaConfig.firstMessage
+                };
+            }
 
             // Start the call
             this.currentCall = await this.vapi.start(callConfig);
@@ -165,8 +318,113 @@ class VapiService {
             return true;
         } catch (error) {
             console.error('Failed to start VAPI conversation:', error);
-            this.emit('error', error);
-            throw error;
+            
+            // Extract detailed error information if it's a Response object
+            let errorDetails = error;
+            
+            // Handle Response object errors
+            if (error instanceof Response) {
+                try {
+                    // Clone response to avoid "already read" errors
+                    const clonedResponse = error.clone();
+                    const errorText = await clonedResponse.text();
+                    let errorJson;
+                    try {
+                        errorJson = JSON.parse(errorText);
+                    } catch {
+                        errorJson = { message: errorText };
+                    }
+                    
+                    errorDetails = {
+                        status: error.status,
+                        statusText: error.statusText,
+                        body: errorJson,
+                        message: errorJson.message || errorJson.error || error.statusText || 'Unknown error',
+                        type: 'start-method-error',
+                        error: error
+                    };
+                    
+                    console.error('VAPI API Error Details:', {
+                        status: error.status,
+                        statusText: error.statusText,
+                        body: errorJson
+                    });
+                } catch (parseError) {
+                    errorDetails = {
+                        status: error.status,
+                        statusText: error.statusText,
+                        message: `HTTP ${error.status}: ${error.statusText}`,
+                        type: 'start-method-error',
+                        error: error
+                    };
+                    console.error('VAPI API Error (could not parse body):', {
+                        status: error.status,
+                        statusText: error.statusText,
+                        parseError: parseError.message
+                    });
+                }
+            } else if (error && typeof error === 'object' && error.error instanceof Response) {
+                // Handle nested Response object (common in VAPI SDK)
+                try {
+                    const response = error.error;
+                    // Clone response to avoid "already read" errors
+                    const clonedResponse = response.clone();
+                    const errorText = await clonedResponse.text();
+                    let errorJson;
+                    try {
+                        errorJson = JSON.parse(errorText);
+                    } catch {
+                        errorJson = { message: errorText };
+                    }
+                    
+                    errorDetails = {
+                        ...error,
+                        apiError: {
+                            status: response.status,
+                            statusText: response.statusText,
+                            body: errorJson,
+                            message: errorJson.message || errorJson.error || response.statusText || 'Unknown error'
+                        },
+                        status: response.status,
+                        statusText: response.statusText,
+                        body: errorJson,
+                        message: errorJson.message || errorJson.error || response.statusText || 'Unknown error'
+                    };
+                    
+                    console.error('VAPI API Error Details:', {
+                        status: response.status,
+                        statusText: response.statusText,
+                        body: errorJson
+                    });
+                } catch (parseError) {
+                    const response = error.error;
+                    errorDetails = {
+                        ...error,
+                        apiError: {
+                            status: response.status,
+                            statusText: response.statusText,
+                            message: `HTTP ${response.status}: ${response.statusText}`
+                        },
+                        status: response.status,
+                        statusText: response.statusText,
+                        message: `HTTP ${response.status}: ${response.statusText}`
+                    };
+                    console.error('VAPI API Error (could not parse body):', {
+                        status: response.status,
+                        statusText: response.statusText,
+                        parseError: parseError.message
+                    });
+                }
+            } else if (error && typeof error === 'object') {
+                // Ensure error details are properly structured
+                errorDetails = {
+                    ...error,
+                    message: error.message || error.error?.message || 'Unknown error occurred'
+                };
+            }
+            
+            this.emit('error', errorDetails);
+            throw errorDetails;
         }
     }
 
