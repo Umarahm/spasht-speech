@@ -1,5 +1,7 @@
 // Service Worker for Spasht PWA
-const CACHE_NAME = 'spasht-v1';
+// Update this version number when deploying a new version
+const APP_VERSION = '1.0.0';
+const CACHE_NAME = `spasht-v${APP_VERSION}`;
 const urlsToCache = [
     '/',
     '/dashboard',
@@ -11,19 +13,25 @@ const urlsToCache = [
     '/global.css'
 ];
 
-// Install event - cache resources
+// Install event - cache resources and skip waiting
 self.addEventListener('install', (event) => {
+    console.log('Service Worker installing, version:', APP_VERSION);
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then((cache) => {
-                console.log('Opened cache');
+                console.log('Opened cache:', CACHE_NAME);
                 return cache.addAll(urlsToCache);
+            })
+            .then(() => {
+                // Skip waiting to activate immediately
+                return self.skipWaiting();
             })
     );
 });
 
-// Activate event - clean up old caches
+// Activate event - clean up old caches and claim clients
 self.addEventListener('activate', (event) => {
+    console.log('Service Worker activating, version:', APP_VERSION);
     event.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
@@ -34,6 +42,10 @@ self.addEventListener('activate', (event) => {
                     }
                 })
             );
+        })
+        .then(() => {
+            // Claim all clients immediately
+            return self.clients.claim();
         })
     );
 });
@@ -49,3 +61,12 @@ self.addEventListener('fetch', (event) => {
     );
 });
 
+// Listen for messages from the main thread
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
+    if (event.data && event.data.type === 'GET_VERSION') {
+        event.ports[0].postMessage({ version: APP_VERSION });
+    }
+});
