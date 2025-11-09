@@ -634,6 +634,14 @@ export default function JAM() {
     }, [analysisResult, session]);
 
     // Reveal hint
+    const revealHint = (index: number) => {
+        setRevealedHints(prev => {
+            if (prev.includes(index)) {
+                return prev;
+            }
+            return [...prev, index];
+        });
+    };
 
     // Auto-upload when recording stops
     useEffect(() => {
