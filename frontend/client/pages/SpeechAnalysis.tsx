@@ -47,6 +47,7 @@ export default function SpeechAnalysis() {
     const [allAudioFiles, setAllAudioFiles] = useState<any[]>([]);
     const [analysesData, setAnalysesData] = useState<{ [sessionId: string]: SpeechAnalysisResult }>({});
     const [loadingAnalyses, setLoadingAnalyses] = useState(false);
+    const [top10SessionIds, setTop10SessionIds] = useState<Set<string>>(new Set());
     const maxAnalysisDisplay = 10;
 
     useEffect(() => {
@@ -99,9 +100,9 @@ export default function SpeechAnalysis() {
                 const data = await response.json();
                 setAllAudioFiles(data.audioFiles || []);
                 
-                // Load analyses for first 10 audio files only
-                const audioFilesToAnalyze = data.audioFiles.slice(0, maxAnalysisDisplay);
-                await loadAnalysesForFiles(audioFilesToAnalyze);
+                // Load analyses for all audio files (not just first 10)
+                // This ensures new sessions are included even if they're beyond the first 10
+                await loadAnalysesForFiles(data.audioFiles);
             }
         } catch (error) {
             console.error('Error fetching audio files:', error);
@@ -135,6 +136,19 @@ export default function SpeechAnalysis() {
             });
 
             setAnalysesData(analysesMap);
+
+            // Sort sessions with analysis by analyzedAt date (most recent first)
+            // Keep only the top 10 most recent sessions
+            const sessionsWithAnalysis = Object.entries(analysesMap)
+                .map(([sessionId, analysis]) => ({
+                    sessionId,
+                    analyzedAt: analysis.analyzedAt || new Date(0).toISOString()
+                }))
+                .sort((a, b) => new Date(b.analyzedAt).getTime() - new Date(a.analyzedAt).getTime())
+                .slice(0, maxAnalysisDisplay)
+                .map(item => item.sessionId);
+
+            setTop10SessionIds(new Set(sessionsWithAnalysis));
         } catch (error) {
             console.error('Error loading analyses:', error);
         } finally {
@@ -1014,8 +1028,10 @@ export default function SpeechAnalysis() {
                                     <div className="space-y-3">
                                         {allAudioFiles.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((audioFile, index) => {
                                             const globalIndex = (currentPage - 1) * itemsPerPage + index;
-                                            const hasAnalysis = globalIndex < maxAnalysisDisplay && analysesData[audioFile.sessionId];
-                                            const fileAnalysis = analysesData[audioFile.sessionId];
+                                            // Check if this session is in the top 10 most recent sessions with analysis
+                                            // This ensures new sessions are included and oldest ones are excluded
+                                            const hasAnalysis = top10SessionIds.has(audioFile.sessionId);
+                                            const fileAnalysis = hasAnalysis ? analysesData[audioFile.sessionId] : null;
                                             
                                             // Determine session type
                                             const sessionType = audioFile.sessionId.startsWith('jam') ? 'jam' : 
@@ -1067,11 +1083,6 @@ export default function SpeechAnalysis() {
                                                                                 Analyzed
                                                                             </span>
                                                                         )}
-                                                                        {globalIndex >= maxAnalysisDisplay && (
-                                                                            <span className="px-2 py-0.5 text-xs rounded-full bg-speech-green/10 text-speech-green/70 font-medium flex-shrink-0">
-                                                                                No Analysis
-                                                                            </span>
-                                                                        )}
                                                                     </div>
                                                                     {hasAnalysis && fileAnalysis && (
                                                                         <div className="mt-2 flex items-center gap-4 text-xs text-speech-green/70 font-bricolage">
@@ -1106,10 +1117,6 @@ export default function SpeechAnalysis() {
                                                                     >
                                                                         View Analysis
                                                                     </Button>
-                                                                ) : globalIndex < maxAnalysisDisplay ? (
-                                                                    <span className="text-xs text-speech-green/60 font-bricolage whitespace-nowrap">
-                                                                        Analysis loading...
-                                                                    </span>
                                                                 ) : (
                                                                     <span className="text-xs text-speech-green/50 font-bricolage whitespace-nowrap">
                                                                         No Analysis Found
